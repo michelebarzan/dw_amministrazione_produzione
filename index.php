@@ -32,8 +32,12 @@
 						<i class="fad fa-network-wired"></i>
 						<div>Gestione Percorsi</div>
 					</div>
-					<div class="homepageLink" data-tooltip="Gestisci la messa in produzione dei lotti" onclick="gotopath('gestioneLotti.php')">
+					<div class="homepageLink" data-tooltip="Gestisci la messa in produzione dei lotti" onclick="gotopath('produzioneLotti.php')">
 						<i class="fad fa-clipboard-list-check"></i>
+						<div>Produzione Lotti</div>
+					</div>
+					<div class="homepageLink" data-tooltip="Crea e gestisci i lotti di produzione" onclick="gotopath('gestioneLotti.php')">
+						<i class="fad fa-layer-plus"></i>
 						<div>Gestione Lotti</div>
 					</div>
 				</div>

@@ -1,6 +1,17 @@
-var data;
+var lotti=[];
+var commesse=[];
+var itemsCreazioneLotto="cabine";
+var filtriCabine;
+var sortableDropHelper=
+{
+    origin:null,
+    target:null,
+    item:null
+};
+var cabine;
+var cabineLotto;
 
-/*function getComposizioneLotti(button)
+function getAnagraficaLotti(button)
 {
     $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
     button.style.borderBottomColor="#4C91CB";
@@ -37,19 +48,20 @@ var data;
     
     actionBar.appendChild(buttonRipristina);
 
-    getTable("view_lotti_pannelli");
+    getTable("view_lotti");
 }
 function getTable(table,orderBy,orderType)
 {
-    if(table=="view_lotti_pannelli")
+    if(table=="view_lotti")
     {
         getEditableTable
         ({
-            table:'view_lotti_pannelli',
-            editable: false,
-            primaryKey:"codice_pannello",
+            table:'view_lotti',
+            editable: true,
+            primaryKey: "id_lotto",
             container:'gestioneLottiContainer',
-            noFilterColumns:['data'],
+            readOnlyColumns:['id_lotto','dataCreazione','utente','commessa'],
+            noFilterColumns:["dataCreazione"],
             orderBy:orderBy,
             orderType:orderType
         });
@@ -58,8 +70,8 @@ function getTable(table,orderBy,orderType)
 function editableTableLoad()
 {
 
-}*/
-async function getMascheraMessaInProduzione(button)
+}
+async function getMascheraCreazioneLotto(button)
 {
     Swal.fire
     ({
@@ -91,52 +103,1083 @@ async function getMascheraMessaInProduzione(button)
     actionBarItem.setAttribute("class","rcb-select-container");
     
     var span=document.createElement("span");
+    span.innerHTML="Commessa";
+    actionBarItem.appendChild(span);
+
+    var selectCommessa=document.createElement("select");
+    selectCommessa.setAttribute("onchange","creaSelectLotto()");
+    selectCommessa.setAttribute("id","selectCommessaGestioneLotti");
+    selectCommessa.setAttribute("style","text-decoration:none");
+
+    commesse=await getCommesse();
+
+    commesse.forEach(function (commessa)
+    {
+        var option=document.createElement("option");
+        option.setAttribute("value",commessa.id_commessa);
+        option.innerHTML=commessa.commessa;
+        selectCommessa.appendChild(option);
+    });
+    
+    actionBarItem.appendChild(selectCommessa);
+    actionBar.appendChild(actionBarItem);
+
+    await creaSelectLotto();
+
+    var buttonAggiungiLotto=document.createElement("button");
+    buttonAggiungiLotto.setAttribute("class","rcb-button-text-icon");
+    buttonAggiungiLotto.setAttribute("id","buttonAggiungiLotto");
+    buttonAggiungiLotto.setAttribute("onclick","getPopupAggiungiLotto()");
+    buttonAggiungiLotto.innerHTML='<span>Aggiungi lotto</span><i style="margin-left:5px" class="fad fa-layer-plus"></i>';
+    
+    actionBar.appendChild(buttonAggiungiLotto);
+
+    var container=document.getElementById("gestioneLottiContainer");
+
+    //-------------------------------------------
+    var pannelliLottoContainer=document.createElement("div");
+    pannelliLottoContainer.setAttribute("class","container-pannelli-gestione-lotti");
+    pannelliLottoContainer.setAttribute("style","min-width:calc(50% - 120px);max-width:calc(50% - 120px);width:calc(50% - 120px);");
+
+    var pannelliLottoTitleContainer=document.createElement("div");
+    pannelliLottoTitleContainer.setAttribute("class","title-container-pannelli-gestione-lotti");
+
+    var span=document.createElement("span");
+    span.setAttribute("class","title-span-pannelli-gestione-lotti");
+    span.setAttribute("id","labelAggiunti");
+    pannelliLottoTitleContainer.appendChild(span);
+    /*var span=document.createElement("span");
+    span.setAttribute("class","title-span-pannelli-gestione-lotti");
+    span.setAttribute("id","nPannelliLotto");
+    pannelliLottoTitleContainer.appendChild(span);*/
+
+    pannelliLottoContainer.appendChild(pannelliLottoTitleContainer);
+
+    var pannelliLottoFilterContainer=document.createElement("div");
+    pannelliLottoFilterContainer.setAttribute("class","filter-container-pannelli-gestione-lotti");
+    pannelliLottoContainer.appendChild(pannelliLottoFilterContainer);
+
+    var pannelliLottoInnerContainer=document.createElement("div");
+    pannelliLottoInnerContainer.setAttribute("class","inner-container-pannelli-gestione-lotti connectedSortable");
+    pannelliLottoInnerContainer.setAttribute("id","pannelliLottoContainer");
+    pannelliLottoContainer.appendChild(pannelliLottoInnerContainer);
+
+    container.appendChild(pannelliLottoContainer);
+
+    var label=document.createElement("div");
+    label.setAttribute("class","container-pannelli-gestione-lotti-label");
+    label.innerHTML="<i class='fad fa-layer-plus'></i><span id='labelTrascina'></span><i class='fad fa-sort-alt'></i>";
+    container.appendChild(label);
+
+    var pannelliContainer=document.createElement("div");
+    pannelliContainer.setAttribute("class","container-pannelli-gestione-lotti");
+    pannelliContainer.setAttribute("style","min-width:calc(50% - 120px);max-width:calc(50% - 120px);width:calc(50% - 120px);");
+
+    var pannelliTitleContainer=document.createElement("div");
+    pannelliTitleContainer.setAttribute("class","title-container-pannelli-gestione-lotti");
+
+    var span=document.createElement("span");
+    span.setAttribute("class","title-span-pannelli-gestione-lotti");
+    span.setAttribute("id","labelDisponibili");
+    pannelliTitleContainer.appendChild(span);
+    /*var span=document.createElement("span");
+    span.setAttribute("class","title-span-pannelli-gestione-lotti");
+    span.setAttribute("id","nPannelli");
+    pannelliTitleContainer.appendChild(span);*/
+
+    var button=document.createElement("button");
+    button.setAttribute("class","title-icon-button-pannelli-gestione-lotti");
+    button.setAttribute("title","Aggiungi tutto");
+    button.setAttribute("onclick","aggiungiTuttoAlLotto()");
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-layer-plus");
+    button.appendChild(i);
+    pannelliTitleContainer.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","title-button-pannelli-gestione-lotti");
+    button.setAttribute("style","margin-left:auto");
+    button.setAttribute("id","btnItemsCreazioneLottoPannelli");
+    button.setAttribute("onclick","itemsCreazioneLotto='pannelli';getInfoLotto()");
+    var span=document.createElement("span");
+    span.innerHTML="Pannelli";
+    button.appendChild(span);
+    pannelliTitleContainer.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","title-button-pannelli-gestione-lotti");
+    button.setAttribute("onclick","itemsCreazioneLotto='cabine';getInfoLotto()");
+    button.setAttribute("id","btnItemsCreazioneLottoCabine");
+    //button.setAttribute("style","background-color:rgb(76, 145, 203);color:#ddd");
+    var span=document.createElement("span");
+    span.innerHTML="Cabine";
+    button.appendChild(span);
+    pannelliTitleContainer.appendChild(button);
+
+    pannelliContainer.appendChild(pannelliTitleContainer);
+
+    var pannelliFilterContainer=document.createElement("div");
+    pannelliFilterContainer.setAttribute("class","filter-container-pannelli-gestione-lotti");
+    pannelliFilterContainer.setAttribute("id","filterContainerGestioneLotti");
+    pannelliContainer.appendChild(pannelliFilterContainer);
+
+    var pannelliInnerContainer=document.createElement("div");
+    pannelliInnerContainer.setAttribute("class","inner-container-pannelli-gestione-lotti connectedSortable");
+    pannelliInnerContainer.setAttribute("id","pannelliContainer");
+    pannelliContainer.appendChild(pannelliInnerContainer);
+
+    container.appendChild(pannelliContainer);
+
+    Swal.close();
+
+    $( ".connectedSortable" ).sortable
+    ({
+        connectWith: ".connectedSortable",
+        start: function( event, ui )
+        {
+            var elements=document.getElementsByClassName("inner-container-pannelli-gestione-lotti");
+            for (let index = 0; index < elements.length; index++)
+            {
+                var element = elements[index];
+                element.style.backgroundColor="#4c92cb11";
+                element.style.borderColor="#4C91CB";
+            }
+
+            var item=ui.item;
+
+            sortableDropHelper.origin=null;
+            sortableDropHelper.target=null;
+            sortableDropHelper.item=null;
+
+            sortableDropHelper.origin=item.parent()[0].id;
+            sortableDropHelper.item=item;
+        },
+        stop: function( event, ui )
+        {
+            var elements=document.getElementsByClassName("inner-container-pannelli-gestione-lotti");
+            for (let index = 0; index < elements.length; index++)
+            {
+                var element = elements[index];
+                element.style.backgroundColor="";
+                element.style.borderColor="";
+            }
+
+            var item=ui.item;
+            var numero_cabina=sortableDropHelper.item.attr("numero_cabina");
+
+            sortableDropHelper.target=item.parent()[0].id;
+
+            if(sortableDropHelper.origin=="pannelliLottoContainer" && sortableDropHelper.target=="pannelliContainer")
+            {
+                rimuoviCabinaLotto(numero_cabina);
+            }
+
+            if(sortableDropHelper.origin=="pannelliContainer" && sortableDropHelper.target=="pannelliLottoContainer")
+            {
+                aggiungiCabinaLotto(numero_cabina);
+            }
+        }
+    }).disableSelection();
+    //-------------------------------------------
+    Swal.close();
+}
+function aggiungiCabinaLotto(numero_cabina)
+{
+    var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+    var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+
+    $.post("aggiungiCabinaLottoGestioneLotti.php",{id_commessa,id_lotto,numero_cabina},
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+        }
+    });
+}
+function rimuoviCabinaLotto(numero_cabina)
+{
+    var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+    var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+
+    $.post("rimuoviCabinaLottoGestioneLotti.php",{id_commessa,id_lotto,numero_cabina},
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+        }
+    });
+}
+function getLotti()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+        $.get("getLottiCommessaGestioneLotti.php",{id_commessa},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+async function getPopupAggiungiLotto()
+{
+    var outerContainer=document.createElement("div");
+    outerContainer.setAttribute("class","popup-lotti-outer-container");
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Lotto";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-lotti-input");input.setAttribute("type","text");
+    input.setAttribute("id","popupNuovoLottoLotto");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Descrizione";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var textarea=document.createElement("textarea");
+    textarea.setAttribute("class","popup-lotti-input");
+    textarea.setAttribute("id","popupNuovoLottoDescrizione");
+    
+    row.appendChild(textarea);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Note";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var textarea=document.createElement("textarea");
+    textarea.setAttribute("class","popup-lotti-input");
+    textarea.setAttribute("id","popupNuovoLottoNote");
+    
+    row.appendChild(textarea);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Commessa";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var select=document.createElement("select");
+    select.setAttribute("class","popup-lotti-select");
+    select.setAttribute("style","width:100%");
+    select.setAttribute("id","popupNuovoLottoCommessa");
+
+    commesse=await getCommesse();
+    commesse.forEach(commessa =>
+    {
+        var option=document.createElement("option");
+        option.setAttribute("value",commessa.id_commessa);
+        option.innerHTML=commessa.commessa;
+        select.appendChild(option);
+    });
+
+    row.appendChild(select);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Wbs";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-lotti-input");input.setAttribute("type","text");
+    input.setAttribute("id","popupNuovoLottoWbs");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Id materiale";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-lotti-input");input.setAttribute("type","text");
+    input.setAttribute("id","popupNuovoLottoId_materiale");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+    
+    var row=document.createElement("div");
+    row.setAttribute("class","popup-lotti-row");
+    row.setAttribute("style","width:100%;flex-direction:row;align-items:center;justify-content:space-between;flex-direction:row;margin-top:10px");
+
+    var confirmButton=document.createElement("button");
+    confirmButton.setAttribute("class","popup-lotti-button");
+    confirmButton.setAttribute("style","width:100%;");
+    confirmButton.setAttribute("onclick","creaNuovoLotto()");
+    confirmButton.innerHTML='<span>Conferma</span><i class="fal fa-check-circle"></i>';
+    row.appendChild(confirmButton);    
+
+    outerContainer.appendChild(row);
+
+    Swal.fire
+    ({
+        background:"#404040",
+        title:"Crea nuovo lotto",
+        html:outerContainer.outerHTML,
+        allowOutsideClick:true,
+        showCloseButton:true,
+        showConfirmButton:true,
+        allowEscapeKey:true,
+        showCancelButton:false,
+        onOpen : function()
+                {
+                    document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";
+                    document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";
+                    document.getElementsByClassName("swal2-title")[0].style.color="#ddd";
+                    document.getElementsByClassName("swal2-title")[0].style.width="100%";
+                    document.getElementsByClassName("swal2-title")[0].style.textDecoration="underline";
+                    document.getElementsByClassName("swal2-close")[0].style.width="40px";
+                    document.getElementsByClassName("swal2-close")[0].style.height="40px";
+                    document.getElementsByClassName("swal2-title")[0].style.margin="0px";
+                    document.getElementsByClassName("swal2-title")[0].style.marginTop="5px";
+                    document.getElementsByClassName("swal2-title")[0].style.fontFamily="'Quicksand',sans-serif";
+                    document.getElementsByClassName("swal2-title")[0].style.textAlign="left";
+                    document.getElementsByClassName("swal2-confirm")[0].style.display="none";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingBottom="0px";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingRight="0px";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingLeft="0px";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingTop="10px";
+                    document.getElementsByClassName("swal2-header")[0].style.paddingLeft="20px";
+                    document.getElementsByClassName("swal2-content")[0].style.padding="0px";
+                    document.getElementsByClassName("swal2-actions")[0].style.margin="0px";
+                }
+    });
+}
+function getCommesse()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getCommesseGestioneLotti.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+function creaNuovoLotto()
+{
+    document.getElementById("popupNuovoLottoLotto").style.border="2px solid #4d4d4d";
+
+    var lotto=document.getElementById("popupNuovoLottoLotto").value;
+    var descrizione=document.getElementById("popupNuovoLottoDescrizione").value;
+    var note=document.getElementById("popupNuovoLottoNote").value;
+    var commessa=document.getElementById("popupNuovoLottoCommessa").value;
+    var wbs=document.getElementById("popupNuovoLottoWbs").value;
+    var id_materiale=document.getElementById("popupNuovoLottoId_materiale").value;
+
+    if(lotto=="" || lotto==null)
+        document.getElementById("popupNuovoLottoLotto").style.border="2px solid #DA6969";
+    else
+    {
+        Swal.fire
+        ({
+            width:"100%",
+            background:"transparent",
+            title:"Caricamento in corso...",
+            html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+            allowOutsideClick:false,
+            showCloseButton:false,
+            showConfirmButton:false,
+            allowEscapeKey:false,
+            showCancelButton:false,
+            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+        });
+        
+        $.post("creaNuovoLottoGestioneLotti.php",
+        {
+            lotto,descrizione,note,commessa,wbs,id_materiale
+        },
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                }
+                else
+                {
+                    console.log(response);
+                    let timerInterval;
+                    Swal.fire
+                    ({
+                        icon:"success",
+                        title: "Lotto creato",
+                        background:"#404040",
+                        showCloseButton:true,
+                        showConfirmButton:false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.boxShadow="none";},
+                        onClose: () => {clearInterval(timerInterval)}
+                    }).then((result) =>
+                    {
+                        getMascheraCreazioneLotto(document.getElementById("btnCreazioneLotto"));
+                    });
+                }
+            }
+        });
+    }
+}
+async function aggiungiTuttoAlLotto()
+{
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+    if(itemsCreazioneLotto=="pannelli")
+    {
+        
+    }
+    else
+    {
+        for (let index = 0; index < cabine.length; index++)
+        {
+            const cabina = cabine[index];
+            var responte=await asyncAggiungiCabinaLotto(cabina.numero_cabina);
+        }
+    }
+    getInfoLotto();
+}
+function asyncAggiungiCabinaLotto(numero_cabina)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+        var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+
+        $.post("aggiungiCabinaLottoGestioneLotti.php",{id_commessa,id_lotto,numero_cabina},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                resolve(response);
+            }
+        });
+    });
+}
+async function getInfoLotto()
+{
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+    var lotto=getFirstObjByPropValue(lotti,"id_lotto",id_lotto);
+
+    document.getElementById("btnItemsCreazioneLottoCabine").style.backgroundColor="";
+    document.getElementById("btnItemsCreazioneLottoCabine").style.color="";
+    document.getElementById("btnItemsCreazioneLottoPannelli").style.backgroundColor="";
+    document.getElementById("btnItemsCreazioneLottoPannelli").style.color="";
+
+    if(itemsCreazioneLotto=="pannelli")
+    {
+        document.getElementById("labelDisponibili").innerHTML="Pannelli disponibili";
+        document.getElementById("labelAggiunti").innerHTML="Pannelli aggiunti al lotto";
+        document.getElementById("labelTrascina").innerHTML="Trascina i pannelli";
+
+        document.getElementById("btnItemsCreazioneLottoPannelli").style.backgroundColor="rgb(76, 145, 203)";
+        document.getElementById("btnItemsCreazioneLottoPannelli").style.color="#ddd";
+        /*var pannelliLotto=await getPannelliLotto(id_lotto);
+        console.log(pannelliLotto);*/
+    }
+    else
+    {
+        if(filtriCabine==null)
+            filtriCabine=await getFiltriCabine();
+
+        document.getElementById("labelDisponibili").innerHTML="Cabine disponibili";
+        document.getElementById("labelAggiunti").innerHTML="Cabine aggiunte al lotto";
+        document.getElementById("labelTrascina").innerHTML="Trascina le cabine";
+
+        var pannelliContainer=document.getElementById("pannelliContainer");
+        pannelliContainer.innerHTML="";
+
+        document.getElementById("btnItemsCreazioneLottoCabine").style.backgroundColor="rgb(76, 145, 203)";
+        document.getElementById("btnItemsCreazioneLottoCabine").style.color="#ddd";
+
+        var filterContainerGestioneLotti=document.getElementById("filterContainerGestioneLotti");
+        filterContainerGestioneLotti.innerHTML="";
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'ponte')");
+        var span=document.createElement("span");
+        span.innerHTML="Ponte";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'firezone')");
+        var span=document.createElement("span");
+        span.innerHTML="Firezone";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'tipo')");
+        var span=document.createElement("span");
+        span.innerHTML="Tipo";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'verso')");
+        var span=document.createElement("span");
+        span.innerHTML="Verso";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'lato_nave')");
+        var span=document.createElement("span");
+        span.innerHTML="Lato nave";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_A')");
+        var span=document.createElement("span");
+        span.innerHTML="Finitura A";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_B')");
+        var span=document.createElement("span");
+        span.innerHTML="Finitura B";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_C')");
+        var span=document.createElement("span");
+        span.innerHTML="Finitura C";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'settimana')");
+        var span=document.createElement("span");
+        span.innerHTML="Settimana";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'famiglia')");
+        var span=document.createElement("span");
+        span.innerHTML="Famiglia";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        var button=document.createElement("button");
+        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+        button.setAttribute("onclick","getPupupFiltro(this,event,'piano_montaggio')");
+        var span=document.createElement("span");
+        span.innerHTML="Piano montaggio";
+        button.appendChild(span);
+        var i=document.createElement("i");
+        i.setAttribute("class","fas fa-filter");
+        button.appendChild(i);
+        filterContainerGestioneLotti.appendChild(button);
+
+        cabine=await getCabine();
+
+        var count=0;
+        cabine.forEach(cabina =>
+        {
+            var keep=true;
+            for (var colonna in cabina)
+            {
+                if (Object.prototype.hasOwnProperty.call(cabina, colonna))
+                {
+                    if(filtriCabine[colonna]!=undefined)
+                    {
+                        var valori=[];
+                        filtriCabine[colonna].forEach(filtro =>
+                        {
+                            if(filtro.checked)
+                            {
+                                valori.push(filtro.valore);
+                            }
+                        });
+                        if(!valori.includes(cabina[colonna]))
+                            keep=false;
+                    }
+                }
+            }
+            if(keep)
+            {
+                count++;
+                var item=document.createElement("div");
+                item.setAttribute("class","pannelli-item");
+                if(count==cabine.length-1)
+                {
+                    item.setAttribute("style","margin-bottom:0px");
+                }
+
+                item.setAttribute("numero_cabina",cabina.numero_cabina);
+                item.setAttribute("kit_cabina",cabina.kit_cabina);
+                item.setAttribute("id_gn",cabina.id_gn);
+
+                var span=document.createElement("span");
+                span.innerHTML=cabina.numero_cabina;
+                item.appendChild(span);
+
+                var span=document.createElement("span");
+                span.setAttribute("style","margin-left:10px");
+                span.innerHTML=cabina.kit_cabina;
+                item.appendChild(span);
+
+                /*var button=document.createElement("button");
+                button.setAttribute("onclick","rimuoviStazionePercorso("+stazione.id_stazione+",true)");
+                button.setAttribute("title","Rimuovi stazione");
+                button.innerHTML='<i class="fas fa-minus"></i>';
+                item.appendChild(button);*/
+
+                pannelliContainer.appendChild(item);
+            }
+        });
+
+        var pannelliLottoContainer=document.getElementById("pannelliLottoContainer");
+        pannelliLottoContainer.innerHTML="";
+
+        cabineLotto=await getCabineLotto();
+        console.log(cabineLotto);
+
+        var count=0;
+        cabineLotto.forEach(cabina =>
+        {
+            count++;
+            var item=document.createElement("div");
+            item.setAttribute("class","pannelli-lotto-item");
+            if(count==cabineLotto.length-1)
+            {
+                item.setAttribute("style","margin-bottom:0px");
+            }
+
+            item.setAttribute("numero_cabina",cabina.numero_cabina);
+            item.setAttribute("kit_cabina",cabina.kit_cabina);
+            item.setAttribute("id_gn",cabina.id_gn);
+
+            var span=document.createElement("span");
+            span.innerHTML=cabina.numero_cabina;
+            item.appendChild(span);
+
+            var span=document.createElement("span");
+            span.setAttribute("style","margin-left:10px");
+            span.innerHTML=cabina.kit_cabina;
+            item.appendChild(span);
+
+            /*var button=document.createElement("button");
+            button.setAttribute("onclick","rimuoviStazionePercorso("+stazione.id_stazione+",true)");
+            button.setAttribute("title","Rimuovi stazione");
+            button.innerHTML='<i class="fas fa-minus"></i>';
+            item.appendChild(button);*/
+
+            pannelliLottoContainer.appendChild(item);
+        });
+    }
+    Swal.close();
+}
+function getCabineLotto()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+        var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+        $.get("getCabineLottoGestioneLotti.php",{id_commessa,id_lotto},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+function getCabine()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+        var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+        $.get("getCabineGestioneLotti.php",{id_commessa,id_lotto},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+function getPupupFiltro(button,event,colonna)
+{
+    closePopupFiltro();
+
+    var rect = button.getBoundingClientRect();
+    var outerContainer=document.createElement("div");
+    outerContainer.setAttribute("class","popup-filtro-outer-container popup-filtro-item");
+    outerContainer.setAttribute("id","popupFiltroOuterContainer"+colonna);
+    outerContainer.setAttribute("style","min-width:"+button.offsetWidth+"px");
+
+    var row=document.createElement("button");
+    row.setAttribute("class","popup-filtro-row popup-filtro-item");
+    row.setAttribute("onclick","this.getElementsByTagName('input')[0].checked=!this.getElementsByTagName('input')[0].checked;checkCheckboxTutti(this.getElementsByTagName('input')[0].checked,'"+colonna+"')");
+
+    var checkbox=document.createElement("input");
+    checkbox.setAttribute("type","checkbox");
+    checkbox.setAttribute("id","popupFiltroCheckboxTutti"+colonna);
+    checkbox.setAttribute("onclick","stopCheckboxPropagation(event);checkCheckboxTutti(this.checked,'"+colonna+"')");
+    row.appendChild(checkbox);
+
+    var span=document.createElement("span");
+    span.setAttribute("class","popup-filtro-item");
+    span.innerHTML="Tutti";
+    row.appendChild(span);
+
+    outerContainer.appendChild(row);
+
+    filtriCabine[colonna].forEach(filtro =>
+    {
+        var row=document.createElement("button");
+        row.setAttribute("class","popup-filtro-row popup-filtro-item");
+        row.setAttribute("onclick","this.getElementsByTagName('input')[0].checked=!this.getElementsByTagName('input')[0].checked;checkCheckbox(this.getElementsByTagName('input')[0],'"+colonna+"','"+filtro.valore+"')");
+
+        var checkbox=document.createElement("input");
+        checkbox.setAttribute("type","checkbox");
+        checkbox.setAttribute("class","popup-filtro-item popup-filtro-checkbox"+colonna);
+        checkbox.setAttribute("valore",filtro.valore);
+        checkbox.setAttribute("onclick","stopCheckboxPropagation(event);checkCheckbox(this,'"+colonna+"','"+filtro.valore+"')");
+        if(filtro.checked)
+            checkbox.setAttribute("checked","checked");
+        row.appendChild(checkbox);
+
+        var span=document.createElement("span");
+        span.setAttribute("class","popup-filtro-item");
+        if(filtro.valore=="" || filtro.valore=="NULL" || filtro.valore==null)
+            span.innerHTML="Vuoto";
+        else
+            span.innerHTML=filtro.valore;
+        row.appendChild(span);
+
+        outerContainer.appendChild(row);
+    });
+
+    var button=document.createElement("button");
+    button.setAttribute("class","popup-filtro-button popup-filtro-item");
+    button.setAttribute("onclick","getValoriFiltriCabine('"+colonna+"')");
+    var span=document.createElement("span");
+    span.setAttribute("class","popup-filtro-item");
+    span.innerHTML="Conferma";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-check-double popup-filtro-item");
+    button.appendChild(i);
+    outerContainer.appendChild(button);
+
+    document.body.appendChild(outerContainer);
+
+    var all=true;
+    var checkboxes=document.getElementsByClassName("popup-filtro-checkbox"+colonna);
+    for (let index = 0; index < checkboxes.length; index++)
+    {
+        const checkbox = checkboxes[index];
+        if(!checkbox.checked)
+            all=false;
+    }
+    document.getElementById("popupFiltroCheckboxTutti"+colonna).checked=all;
+
+    $("#popupFiltroOuterContainer"+colonna).css({"left":rect.left+"px","top":(rect.top+32.5)+"px"});
+}
+function closePopupFiltro()
+{
+    $(".popup-filtro-outer-container").remove();
+}
+function getValoriFiltriCabine(colonna)
+{
+    var checkboxes=document.getElementsByClassName("popup-filtro-checkbox"+colonna);
+    for (let index = 0; index < checkboxes.length; index++)
+    {
+        const checkbox = checkboxes[index];
+        var valore=checkbox.getAttribute("valore");
+        
+        filtriCabine[colonna].forEach(filtro =>
+        {
+            if(filtro.valore==valore)
+                filtro.checked=checkbox.checked;
+        });
+    }
+    closePopupFiltro();
+    getInfoLotto();
+}
+function checkCheckboxTutti(checked,colonna)
+{
+    var all=true;
+    var checkboxes=document.getElementsByClassName("popup-filtro-checkbox"+colonna);
+    for (let index = 0; index < checkboxes.length; index++)
+    {
+        const checkbox = checkboxes[index];
+        checkbox.checked=checked;
+    }
+}
+function checkCheckbox(checkbox,colonna,valore)
+{
+    var all=true;
+    var checkboxes=document.getElementsByClassName("popup-filtro-checkbox"+colonna);
+    for (let index = 0; index < checkboxes.length; index++)
+    {
+        const checkbox = checkboxes[index];
+        if(!checkbox.checked)
+            all=false;
+    }
+    document.getElementById("popupFiltroCheckboxTutti"+colonna).checked=all;
+}
+function getPannelliLotto(id_lotto)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getPannelliLottoGestioneLotti.php",{id_lotto},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+async function creaSelectLotto()
+{
+    var actionBar=document.getElementById("actionBarGestioneLotti");
+
+    var actionBarItem=document.createElement("div");
+    actionBarItem.setAttribute("class","rcb-select-container");
+    
+    var span=document.createElement("span");
     span.innerHTML="Lotto";
     actionBarItem.appendChild(span);
 
     var selectLotto=document.createElement("select");
-    selectLotto.setAttribute("onchange","getPannelliLotto()");
+    selectLotto.setAttribute("onchange","getInfoLotto()");
     selectLotto.setAttribute("id","selectLottoGestioneLotti");
 
-    var lotti=await getLotti();
-
-    var dirty_commesse=[];
+    lotti=await getLotti();
+    
     lotti.forEach(function (lotto)
     {
-        dirty_commesse.push(lotto.commessa);
-    });
-    var commesse = [];
-    $.each(dirty_commesse, function(i, el){
-        if($.inArray(el, commesse) === -1) commesse.push(el);
-    });
-    commesse.forEach(function (commessa)
-    {
-        var optgroup=document.createElement("optgroup");
-        optgroup.setAttribute("label",commessa);
-        lotti.forEach(function (lotto)
-        {
-            if(lotto.commessa==commessa)
-            {
-                var option=document.createElement("option");
-                option.setAttribute("value",lotto.id_lotto);
-                option.innerHTML=lotto.lotto;
-                optgroup.appendChild(option);
-            }
-        });
-        selectLotto.appendChild(optgroup);
+        var option=document.createElement("option");
+        option.setAttribute("value",lotto.id_lotto);
+        option.innerHTML=lotto.lotto;
+        selectLotto.appendChild(option);
     });
     
     actionBarItem.appendChild(selectLotto);
-    actionBar.appendChild(actionBarItem);
 
-    var buttonMettiInProduzione=document.createElement("button");
-    buttonMettiInProduzione.setAttribute("class","rcb-button-text-icon");
-    buttonMettiInProduzione.setAttribute("id","buttonMettiInProduzione");
-    buttonMettiInProduzione.setAttribute("disabled","disabled");
-    buttonMettiInProduzione.setAttribute("onclick","getPopupMettiInProduzione()");
-    buttonMettiInProduzione.innerHTML='<span>Metti in produzione</span><i style="margin-left:5px" class="fas fa-check-circle"></i>';
-    
-    actionBar.appendChild(buttonMettiInProduzione);
+    if(document.getElementById("selectLottoGestioneLotti")==null)
+        actionBar.appendChild(actionBarItem);
+    else
+    {
+        document.getElementById("selectLottoGestioneLotti").parentElement.remove();
+        actionBar.insertBefore(actionBarItem, actionBar.childNodes[1]); 
+    }
 
     $("#selectLottoGestioneLotti").multipleSelect(
     {
@@ -145,6 +1188,7 @@ async function getMascheraMessaInProduzione(button)
                 {
                     $(".ms-choice").css({"height":"20px","line-height":"21px","background-color":"transparent","border":"none"});
                     $(".ms-parent").css({"max-width":"70px"});
+                    $(".ms-choice").css({"outline":"none"});
                 },
         onOpen:function()
         {
@@ -157,13 +1201,13 @@ async function getMascheraMessaInProduzione(button)
         filterPlaceholder:"Cerca...",
         locale:"it-IT"
     });
-    Swal.close();
 }
-function getLotti()
+function getFiltriCabine()
 {
     return new Promise(function (resolve, reject) 
     {
-        $.get("getLottiGestioneLotti.php",
+        var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
+        $.get("getFiltriCabineGestioneLotti.php",{id_commessa},
         function(response, status)
         {
             if(status=="success")
@@ -188,670 +1232,17 @@ function getLotti()
         });
     });
 }
-async function getPannelliLotto()
+function stopCheckboxPropagation(event)
 {
-    Swal.fire
-    ({
-        width:"100%",
-        background:"transparent",
-        title:"Caricamento in corso...",
-        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
-        allowOutsideClick:false,
-        showCloseButton:false,
-        showConfirmButton:false,
-        allowEscapeKey:false,
-        showCancelButton:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
-    });
-
-    var producibile=true;
-
-    var gestioneLottiContainer=document.getElementById("gestioneLottiContainer");
-    gestioneLottiContainer.innerHTML="";
-
-    var id_lotto=$('#selectLottoGestioneLotti').multipleSelect('getSelects')[0];
-
-    data=await getViewMessaInProduzioneLotti(id_lotto);
-    //console.log(data);
-
-    var containerTotaliPercorsi=document.createElement("div");
-    containerTotaliPercorsi.setAttribute("class","container-totali-percorsi");
-
-    var totaliPercorsiTitle=document.createElement("div");
-    totaliPercorsiTitle.setAttribute("class","totali-percorsi-title-container");
-
-    var span=document.createElement("span");
-    span.setAttribute("class","totali-percorsi-title");
-    span.setAttribute("style","margin-left: 15px;");
-    span.innerHTML="Percorsi trovati";
-    totaliPercorsiTitle.appendChild(span);
-
-    var pannelli=[];
-    data.forEach(row =>
+    event.stopPropagation();
+}
+window.addEventListener("click", windowClick, false);
+function windowClick(e)
+{
+    try
     {
-        pannelli.push(row.numero_pannello);
-    });
-    var n_pannelli=pannelli.length;
-    var n_pannelli_lotto=await getNPannelliLotto(id_lotto);
-    if(n_pannelli_lotto<n_pannelli)
-    {
-        var div=document.createElement("div");
-        div.setAttribute("style","display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-sizing: border-box;margin-left: auto;margin-right: 15px;");
-
-        var icon=document.createElement("i");
-        icon.setAttribute("class","fas fa-exclamation-triangle");
-        icon.setAttribute("style","color:#DA6969;margin-right:5px;font-size:14px");
-        div.appendChild(icon);
-
-        var span=document.createElement("span");
-        span.setAttribute("style","color:#ddd;font-family: 'Montserrat',sans-serif;font-size:12px;text-align: left;");
-        span.innerHTML='<b style="font-weight:bold;color:#DA6969;">Errore nei filtri.</b> Pannelli assengati: '+n_pannelli+'. Pannelli lotto: '+n_pannelli_lotto;
-        div.appendChild(span);
-        
-        totaliPercorsiTitle.appendChild(div);
-
-        producibile=false;
+        if(e.target.className!="filter-button-pannelli-gestione-lotti" && e.target.parentElement.className!="filter-button-pannelli-gestione-lotti" && e.target.className.indexOf("popup-filtro-item")==-1 && e.target.className!="popup-filtro-outer-container")
+            closePopupFiltro();
     }
-    if(n_pannelli_lotto>n_pannelli)
-    {
-        var div=document.createElement("div");
-        div.setAttribute("style","display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-sizing: border-box;margin-left: auto;margin-right: 15px;");
-
-        var icon=document.createElement("i");
-        icon.setAttribute("class","fas fa-exclamation-triangle");
-        icon.setAttribute("style","color:#DA6969;margin-right:5px;font-size:14px");
-        div.appendChild(icon);
-
-        var span=document.createElement("span");
-        span.setAttribute("style","color:#ddd;font-family: 'Montserrat',sans-serif;font-size:12px;text-align: left;");
-        span.innerHTML='<b style="font-weight:bold;color:#DA6969;">Errore generale.</b> Pannelli assengati: '+n_pannelli+'. Pannelli lotto: '+n_pannelli_lotto;
-        div.appendChild(span);
-        
-        totaliPercorsiTitle.appendChild(div);
-
-        producibile=false;
-    }
-    if(n_pannelli_lotto==n_pannelli)
-    {
-        var span=document.createElement("span");
-        span.setAttribute("class","totali-percorsi-title");
-        span.setAttribute("style","margin-left: auto;margin-right:15px");
-        span.innerHTML=n_pannelli_lotto+" pannelli";
-        totaliPercorsiTitle.appendChild(span);
-    }
-
-    containerTotaliPercorsi.appendChild(totaliPercorsiTitle);
-
-    var totaliPercorsiInnerContainer=document.createElement("div");
-    totaliPercorsiInnerContainer.setAttribute("class","inner-container-totali-percorsi");
-
-    var infoPercorsiDuplicates=[];
-    data.forEach(row =>
-    {
-        var infoPercorso=
-        {
-            id_percorso:row.id_percorso,
-            nome_percorso:row.nome_percorso,
-            descrizione_percorso:row.descrizione_percorso,
-            attivo:row.attivo,
-            priorita:row.priorita,
-            id_filtro:row.id_filtro,
-            nome_filtro:row.nome_filtro,
-            descrizione_filtro:row.descrizione_filtro
-        };
-        infoPercorsiDuplicates.push(infoPercorso);
-    });
-
-    var infoPercorsi=[];
-    
-    infoPercorsiDuplicates.forEach(infoPercorsoDuplicates =>
-    {
-        var push=true;
-        infoPercorsi.forEach(infoPercorso =>
-        {
-            if(infoPercorso.id_filtro==infoPercorsoDuplicates.id_filtro)
-                push=false;
-        });
-        if(push)
-            infoPercorsi.push(infoPercorsoDuplicates);
-    });
-
-    infoPercorsi.forEach(infoPercorso =>
-    {
-        var n_pannelli=0;
-        infoPercorsiDuplicates.forEach(infoPercorsoDuplicates =>
-        {
-            if(JSON.stringify(infoPercorso) === JSON.stringify(infoPercorsoDuplicates))
-            {
-                n_pannelli++;
-            }
-        });
-        infoPercorso.n_pannelli=n_pannelli;
-    });
-
-    infoPercorsi.forEach(infoPercorso =>
-    {
-        var totaliPercorsiItem=document.createElement("div");
-        totaliPercorsiItem.setAttribute("class","totali-percorsi-item");
-
-        var infoFiltroContainer=document.createElement("div");
-        infoFiltroContainer.setAttribute("class","totali-percorsi-item-inner-container");
-        infoFiltroContainer.setAttribute("style","border-top-left-radius:4px;width:35%");
-
-        var title=document.createElement("div");
-        title.setAttribute("class","totali-percorsi-item-inner-container-title");
-        title.setAttribute("style","border-top-left-radius:4px");
-        var icon=document.createElement("i");
-        icon.setAttribute("class","fas fa-filter totali-percorsi-item-inner-container-title-i");
-        title.appendChild(icon);
-        var span=document.createElement("span");
-        span.setAttribute("class","totali-percorsi-item-inner-container-title-span");
-        span.innerHTML="Filtro applicato";
-        title.appendChild(span);
-
-        if(infoPercorso.id_filtro==null)
-        {
-            var button=document.createElement("button");
-            button.setAttribute("onclick","window.location.href='gestionePercorsi.php?btnToClick=btnAnagraficaFiltri';");
-            var span=document.createElement("span");
-            span.innerHTML="Crea filtro";
-            button.appendChild(span);
-            var icon=document.createElement("i");
-            icon.setAttribute("class","fad fa-plus-circle");
-            button.appendChild(icon);
-            title.appendChild(button);
-        }
-
-        infoFiltroContainer.appendChild(title);
-
-        if(infoPercorso.id_filtro!=null)
-        {
-            var span=document.createElement("span");
-            span.setAttribute("class","totali-percorsi-item-inner-container-span");
-            span.setAttribute("style","font-weight:bold");
-            span.setAttribute("title",infoPercorso.nome_filtro);
-            span.innerHTML=infoPercorso.nome_filtro;
-            infoFiltroContainer.appendChild(span);
-        }
-        else
-        {
-            var div=document.createElement("div");
-            div.setAttribute("style","display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-sizing: border-box;padding-left:10px;padding-bottom:10px;padding-right:10px;width: 100%;");
-
-            var icon=document.createElement("i");
-            icon.setAttribute("class","fas fa-exclamation-triangle");
-            icon.setAttribute("style","color:#DA6969;margin-right:5px;font-size:14px");
-            div.appendChild(icon);
-
-            var span=document.createElement("span");
-            span.setAttribute("style","font-weight:bold;color:#DA6969;font-family: 'Montserrat',sans-serif;font-size:12px;text-align: left;");
-            span.innerHTML='Nessun filtro applicabile';
-            div.appendChild(span);
-            
-            infoFiltroContainer.appendChild(div);
-
-            producibile=false;
-        }
-
-        if(infoPercorso.descrizione_filtro!="" && infoPercorso.descrizione_filtro!=null)
-        {
-            var span=document.createElement("span");
-            span.setAttribute("class","totali-percorsi-item-inner-container-span");
-            span.setAttribute("title",infoPercorso.descrizione_filtro);
-            span.innerHTML=infoPercorso.descrizione_filtro;
-            infoFiltroContainer.appendChild(span);
-        }
-
-        totaliPercorsiItem.appendChild(infoFiltroContainer);
-
-        var infoNPannelliContainer=document.createElement("div");
-        infoNPannelliContainer.setAttribute("class","totali-percorsi-item-inner-container");
-        infoNPannelliContainer.setAttribute("style","border-top-right-radius:4px;width:20%;border-left:1px solid #ddd;border-right:1px solid #ddd;");
-
-        var title=document.createElement("div");
-        title.setAttribute("class","totali-percorsi-item-inner-container-title");
-
-        var icon=document.createElement("i");
-        icon.setAttribute("class","fad fa-sigma totali-percorsi-item-inner-container-title-i");
-        title.appendChild(icon);
-        var span=document.createElement("span");
-        span.setAttribute("class","totali-percorsi-item-inner-container-title-span");
-        span.innerHTML="Pannelli";
-        title.appendChild(span);
-
-        var button=document.createElement("button");
-        button.setAttribute("onclick","getDettagliPannelli("+infoPercorso.id_filtro+")");
-        var span=document.createElement("span");
-        span.innerHTML="Dettagli";
-        button.appendChild(span);
-        var icon=document.createElement("i");
-        icon.setAttribute("class","fad fa-info-circle");
-        button.appendChild(icon);
-        title.appendChild(button);
-
-        infoNPannelliContainer.appendChild(title);
-
-        var span=document.createElement("span");
-        span.setAttribute("class","totali-percorsi-item-inner-container-span");
-        span.setAttribute("style","font-weight:bold");
-        span.innerHTML=infoPercorso.n_pannelli;
-        infoNPannelliContainer.appendChild(span);
-
-        totaliPercorsiItem.appendChild(infoNPannelliContainer);
-
-        var infoPercorsoContainer=document.createElement("div");
-        infoPercorsoContainer.setAttribute("class","totali-percorsi-item-inner-container");
-        infoPercorsoContainer.setAttribute("style","border-top-right-radius:4px;width:45%");
-
-        var title=document.createElement("div");
-        title.setAttribute("class","totali-percorsi-item-inner-container-title");
-        title.setAttribute("style","border-top-right-radius:4px");
-        var icon=document.createElement("i");
-        icon.setAttribute("class","fad fa-network-wired totali-percorsi-item-inner-container-title-i");
-        title.appendChild(icon);
-        var span=document.createElement("span");
-        span.setAttribute("class","totali-percorsi-item-inner-container-title-span");
-        span.innerHTML="Percorso scelto";
-        title.appendChild(span);
-
-        if(infoPercorso.id_percorso!=null)
-        {
-            var input=document.createElement("input");
-            input.setAttribute("id","idPercorsoFiltro"+infoPercorso.id_filtro);
-            input.setAttribute("type","hidden");
-            input.setAttribute("value",infoPercorso.id_percorso);
-            title.appendChild(input);
-
-            var button=document.createElement("button");
-            button.setAttribute("onclick","getPopupCambiaPercorso("+infoPercorso.id_filtro+")");
-            var span=document.createElement("span");
-            span.innerHTML="Cambia";
-            button.appendChild(span);
-            var icon=document.createElement("i");
-            icon.setAttribute("class","fad fa-repeat-alt");
-            button.appendChild(icon);
-            title.appendChild(button);
-        }
-        
-        infoPercorsoContainer.appendChild(title);
-
-        if(infoPercorso.id_percorso!=null)
-        {
-            var span=document.createElement("span");
-            span.setAttribute("class","totali-percorsi-item-inner-container-span");
-            span.setAttribute("id","nomePercorsoFiltro"+infoPercorso.id_filtro);
-            span.setAttribute("style","font-weight:bold");
-            span.setAttribute("title",infoPercorso.nome_percorso);
-            span.innerHTML=infoPercorso.nome_percorso;
-            infoPercorsoContainer.appendChild(span);
-        }
-        
-        else
-        {
-            var div=document.createElement("div");
-            div.setAttribute("style","display:flex;flex-direction:row;align-items:center;justify-content:flex-start;box-sizing: border-box;padding-left:10px;padding-bottom:10px;padding-right:10px;width: 100%;");
-
-            var icon=document.createElement("i");
-            icon.setAttribute("class","fas fa-exclamation-triangle");
-            icon.setAttribute("style","color:#DA6969;margin-right:5px;font-size:14px");
-            div.appendChild(icon);
-
-            var span=document.createElement("span");
-            span.setAttribute("style","font-weight:bold;color:#DA6969;font-family: 'Montserrat',sans-serif;font-size:12px;text-align: left;");
-            span.innerHTML='Nessun percorso trovato';
-            div.appendChild(span);
-            
-            infoPercorsoContainer.appendChild(div);
-
-            producibile=false;
-        }
-
-        if(infoPercorso.descrizione_percorso!="" && infoPercorso.descrizione_percorso!=null)
-        {
-            var span=document.createElement("span");
-            span.setAttribute("class","totali-percorsi-item-inner-container-span");
-            span.setAttribute("id","descrizionePercorsoFiltro"+infoPercorso.id_filtro);
-            span.setAttribute("title",infoPercorso.descrizione_percorso);
-            span.innerHTML=infoPercorso.descrizione_percorso;
-            infoPercorsoContainer.appendChild(span);
-        }
-
-        totaliPercorsiItem.appendChild(infoPercorsoContainer);
-
-        totaliPercorsiInnerContainer.appendChild(totaliPercorsiItem);
-    });
-
-    containerTotaliPercorsi.appendChild(totaliPercorsiInnerContainer);
-
-    gestioneLottiContainer.append(containerTotaliPercorsi);
-
-    setTimeout(() =>
-    {
-        document.getElementById("buttonMettiInProduzione").disabled=!producibile;
-        if(producibile)
-        {
-            document.getElementById("buttonMettiInProduzione").style.backgroundColor="#70B085";
-
-            setTimeout(() => {
-                document.getElementById("buttonMettiInProduzione").style.backgroundColor="";
-            }, 500);
-        }
-    }, 1000);
-    
-    //-----------------------------------------------------------------------------------
-
-    var containerDettaglioPannelli=document.createElement("div");
-    containerDettaglioPannelli.setAttribute("class","container-dettaglio-pannelli");
-    containerDettaglioPannelli.setAttribute("id","containerDettaglioPannelli");
-
-    var dettaglioPannelliTitle=document.createElement("div");
-    dettaglioPannelliTitle.setAttribute("class","dettaglio-pannelli-title-container");
-
-    var span=document.createElement("span");
-    span.setAttribute("class","dettaglio-pannelli-title");
-    span.innerHTML="Dettagli pannelli";
-    dettaglioPannelliTitle.appendChild(span);
-
-    containerDettaglioPannelli.appendChild(dettaglioPannelliTitle);
-
-    var innerContainerDettaglioPannelli=document.createElement("div");
-    innerContainerDettaglioPannelli.setAttribute("class","inner-container-dettaglio-pannelli");
-    innerContainerDettaglioPannelli.setAttribute("id","innerContainerDettaglioPannelli");
-    containerDettaglioPannelli.appendChild(innerContainerDettaglioPannelli);
-
-    var label=document.createElement("div");
-    label.setAttribute("id","dettaglioPannelliLabel");
-    label.innerHTML="<i class='fal fa-info-circle'></i><span>Clicca un pulsante dettagli</span><i class='fal fa-mouse-pointer'></i>";
-    innerContainerDettaglioPannelli.appendChild(label);
-
-    gestioneLottiContainer.append(containerDettaglioPannelli);
-
-    Swal.close();
-}
-async function getDettagliPannelli(id_filtro)
-{
-    Swal.fire
-    ({
-        width:"100%",
-        background:"transparent",
-        title:"Caricamento in corso...",
-        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
-        allowOutsideClick:false,
-        showCloseButton:false,
-        showConfirmButton:false,
-        allowEscapeKey:false,
-        showCancelButton:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
-    });
-    
-    var pannelli=[];
-    data.forEach(row =>
-    {
-        if(row.id_filtro==id_filtro)
-            pannelli.push(row.numero_pannello);
-    });
-
-    var infoPannelli=await getInfoPannelli(pannelli);
-
-    var innerContainerDettaglioPannelli=document.getElementById("innerContainerDettaglioPannelli");
-    innerContainerDettaglioPannelli.innerHTML="";
-    
-    var tableDettagliPannelli=document.createElement("table");
-    tableDettagliPannelli.setAttribute("id","tableDettagliPannelli");
-
-    var tr=document.createElement("tr");
-
-    var th=document.createElement("th");th.innerHTML="Codice";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Tipo";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Configurazione";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Tipo pannello";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Forato";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Elettrificato";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Rinforzato";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Piegato";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Lunghezza 1";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Lunghezza 2";tr.appendChild(th);
-    var th=document.createElement("th");th.innerHTML="Angolo";tr.appendChild(th);
-
-    tableDettagliPannelli.appendChild(tr);
-
-    infoPannelli.forEach(pannello =>
-    {
-        var tr=document.createElement("tr");
-
-        var td=document.createElement("td");td.innerHTML=pannello.codice_pannello;tr.appendChild(td);
-        var td=document.createElement("td");td.innerHTML=pannello.tipo;tr.appendChild(td);
-        var td=document.createElement("td");td.innerHTML=pannello.configurazione;tr.appendChild(td);
-        var td=document.createElement("td");td.innerHTML=pannello.pannello;tr.appendChild(td);
-        var td=document.createElement("td");var icon=document.createElement("i");if(pannello.forato){icon.setAttribute("class","fas fa-check-square");icon.setAttribute("style","color:rgb(48, 133, 214)");}else{icon.setAttribute("class","far fa-square");}td.appendChild(icon);tr.appendChild(td);
-        var td=document.createElement("td");var icon=document.createElement("i");if(pannello.elettrificato){icon.setAttribute("class","fas fa-check-square");icon.setAttribute("style","color:rgb(48, 133, 214)");}else{icon.setAttribute("class","far fa-square");}td.appendChild(icon);tr.appendChild(td);
-        var td=document.createElement("td");var icon=document.createElement("i");if(pannello.rinforzato){icon.setAttribute("class","fas fa-check-square");icon.setAttribute("style","color:rgb(48, 133, 214)");}else{icon.setAttribute("class","far fa-square");}td.appendChild(icon);tr.appendChild(td);
-        var td=document.createElement("td");var icon=document.createElement("i");if(pannello.piegato){icon.setAttribute("class","fas fa-check-square");icon.setAttribute("style","color:rgb(48, 133, 214)");}else{icon.setAttribute("class","far fa-square");}td.appendChild(icon);tr.appendChild(td);
-        var td=document.createElement("td");td.innerHTML=pannello.lunghezza_1;tr.appendChild(td);
-        var td=document.createElement("td");td.innerHTML=pannello.lunghezza_2;tr.appendChild(td);
-        var td=document.createElement("td");td.setAttribute("style","border-right:0px solid transparent;");td.innerHTML=pannello.angolo;tr.appendChild(td);
-
-        tableDettagliPannelli.appendChild(tr);
-    });
-
-    innerContainerDettaglioPannelli.appendChild(tableDettagliPannelli);
-
-    Swal.close();
-}
-function getInfoPannelli(pannelli)
-{
-    return new Promise(function (resolve, reject) 
-    {
-        var JSONpannelli=JSON.stringify(pannelli);
-        $.post("getInfoPannelliGestioneLotti.php",
-        {
-            JSONpannelli
-        },
-        function(response, status)
-        {
-            if(status=="success")
-            {
-                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-                {
-                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                    console.log(response);
-                    resolve([]);
-                }
-                else
-                {
-                    try {
-                        resolve(JSON.parse(response));
-                    } catch (error) {
-                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                        console.log(response);
-                        resolve([]);
-                    }
-                }
-            }
-        });
-    });
-}
-function getViewMessaInProduzioneLotti(id_lotto)
-{
-    return new Promise(function (resolve, reject) 
-    {
-        $.get("getViewMessaInProduzioneLottiGestioneLotti.php",
-        {
-            id_lotto
-        },
-        function(response, status)
-        {
-            if(status=="success")
-            {
-                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-                {
-                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                    console.log(response);
-                    resolve([]);
-                }
-                else
-                {
-                    try {
-                        resolve(JSON.parse(response));
-                    } catch (error) {
-                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                        console.log(response);
-                        resolve([]);
-                    }
-                }
-            }
-        });
-    });
-}
-function getNPannelliLotto(id_lotto)
-{
-    return new Promise(function (resolve, reject) 
-    {
-        $.get("getNPannelliLottoGestioneLotti.php",
-        {
-            id_lotto
-        },
-        function(response, status)
-        {
-            if(status=="success")
-            {
-                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-                {
-                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                    console.log(response);
-                    resolve(0);
-                }
-                else
-                    resolve(response);
-            }
-        });
-    });
-}
-async function getPopupCambiaPercorso(id_filtro)
-{
-    Swal.fire
-    ({
-        width:"100%",
-        background:"transparent",
-        title:"Caricamento in corso...",
-        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
-        allowOutsideClick:false,
-        showCloseButton:false,
-        showConfirmButton:false,
-        allowEscapeKey:false,
-        showCancelButton:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
-    });
-
-    var percorsiAlternativi=await getPercorsiAlternativi(id_filtro);
-    console.log(percorsiAlternativi);
-
-    var outerContainer=document.createElement("div");
-    outerContainer.setAttribute("class","popup-cambia-percorso-outer-container");
-
-    percorsiAlternativi.forEach(percorso => 
-    {
-        var percorsoItem=document.createElement("button");
-        percorsoItem.setAttribute("class","popup-cambia-percorso-item");
-        percorsoItem.setAttribute("onclick","cambiaPercorso("+percorso.filtro+","+percorso.id_percorso+",'"+percorso.nome+"','"+percorso.descrizione+"')");
-
-        var div=document.createElement("div");
-
-        var span=document.createElement("span");
-        span.innerHTML=percorso.nome;
-        div.appendChild(span);
-
-        var span=document.createElement("span");
-        span.setAttribute("style","margin-left:auto;font-weight:bold");
-        span.innerHTML="#"+percorso.priorita;
-        div.appendChild(span);
-
-        percorsoItem.appendChild(div);
-
-        if(percorso.descrizione!="" && percorso.descrizione!=null)
-        {
-            var div=document.createElement("div");
-
-            var span=document.createElement("span");
-            span.innerHTML=percorso.descrizione;
-            div.appendChild(span);
-
-            percorsoItem.appendChild(div);
-        }
-        
-        outerContainer.appendChild(percorsoItem);
-    });
-
-    Swal.fire
-    ({
-        background:"#f1f1f1",
-        title:"Cambia percorso",
-        html:outerContainer.outerHTML,
-        allowOutsideClick:true,
-        showCloseButton:true,
-        showConfirmButton:false,
-        allowEscapeKey:true,
-        showCancelButton:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-title")[0].style.color="black";document.getElementsByClassName("swal2-close")[0].style.outline="none"}
-    });
-}
-function cambiaPercorso(id_filtro,id_percorso,nome,descrizione)
-{
-    document.getElementById("idPercorsoFiltro"+id_filtro).value=id_percorso;
-    document.getElementById("nomePercorsoFiltro"+id_filtro).innerHTML=nome;
-    document.getElementById("descrizionePercorsoFiltro"+id_filtro).innerHTML=descrizione;
-
-    Swal.close();
-}
-function getPercorsiAlternativi(id_filtro)
-{
-    return new Promise(function (resolve, reject) 
-    {
-        $.get("getPercorsiAlternativiGestioneLotti.php",
-        {
-            id_filtro
-        },
-        function(response, status)
-        {
-            if(status=="success")
-            {
-                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-                {
-                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                    console.log(response);
-                    resolve([]);
-                }
-                else
-                {
-                    try {
-                        resolve(JSON.parse(response));
-                    } catch (error) {
-                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                        console.log(response);
-                        resolve([]);
-                    }
-                }
-            }
-        });
-    });
-}
-function getPopupMettiInProduzione()
-{
-    Swal.fire
-    ({
-        icon:"success",
-        background:"#404040",
-        title:"Lotto messo in produzione",
-        allowOutsideClick:true,
-        onOpen : function()
-                {
-                    document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";
-                    document.getElementsByClassName("swal2-title")[0].style.color="white";
-                    document.getElementsByClassName("swal2-close")[0].style.outline="none";
-                    document.getElementsByClassName("swal2-content")[0].style.padding="0px";
-                },
-        showCloseButton:true,
-        showConfirmButton:false,
-        showCancelButton:false
-    });
+    catch (error) {}
 }

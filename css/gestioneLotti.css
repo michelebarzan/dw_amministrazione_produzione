@@ -319,234 +319,239 @@ body
     align-items: center;
     justify-content: flex-start;
 }
-#buttonMettiInProduzione
+/*-------------------------------------------------------*/
+.popup-lotti-outer-container
 {
-	transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+    margin:20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    width:calc(100% - 40px);
+    /*align-items: center;*/
+    justify-content: flex-start;
 }
-#buttonMettiInProduzione:disabled
+.popup-lotti-inner-container
 {
-	cursor: not-allowed;
-	opacity: 0.6;
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-height: 550px;
+    overflow-y: auto;
 }
-/*---------------------------------------------------------*/
-.container-totali-percorsi
+.popup-lotti-row
 {
-	height: 100%;
-	max-height: 100%;
-	min-height: 100%;
-	width: calc(65% - 10px);
-	margin-right: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	background-color:#f0f0f0;
-	border-radius: 4px;
-	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    display: flex;
+    width: auto;
+    box-sizing: border-box;
 }
-.totali-percorsi-title-container
+.popup-lotti-row img
 {
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-	width: 100%;
-	height: 40px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	background-color: #404040;
+    width: 100px;
+    height: 100px;
+    margin:5px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    border-radius: 4px;
 }
-.totali-percorsi-title
+.swal2-title
 {
-	font-family: 'Montserrat',sans-serif;
-	color:white;
-	font-weight: normal;
-	font-size:12px;
+    color:#ddd;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Montserrat',sans-serif;
 }
-.inner-container-totali-percorsi
+.swal2-popup
 {
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	max-height: calc(100% - 40px);
-	min-height: calc(100% - 40px);
-	height: calc(100% - 40px);
-	box-sizing: border-box;
-	padding-bottom: 10px;
-	overflow-y: auto;
+    padding-left: 0px;
+    padding-right: 0px;
 }
-.totali-percorsi-item
+.popup-lotti-select
 {
-	width: calc(100% - 20px);
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-top: 10px;
-	border-radius: 4px !important;
-	box-sizing: border-box;
-	border-bottom:1px solid #ddd;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	background-color: white;
+    width:150px;
+    background-color: #4d4d4d;
+    border:none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    height: 30px;
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+    -webkit-appearance:none;
+}
+.popup-lotti-textarea,.popup-lotti-input
+{
 	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    border:2px solid #4d4d4d;
+    background-color: #363636;
+    border-radius: 4px;
+    outline: none;
+    width:100%;
+    resize: none;
+    overflow: hidden;
+    -webkit-appearance:none;
+    box-sizing: border-box;
+    padding:5px;
+    font-weight: normal;
 }
-.totali-percorsi-item-inner-container
+.popup-lotti-textarea
 {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	/*width: calc(100% / 3);*/
+    height:60px;
 }
-.totali-percorsi-item-inner-container-title
+.popup-lotti-button
 {
-	width: 100%;
-	box-sizing: border-box;
-	padding-left:10px;
-	padding-right:10px;
-	height: 35px;
-	background-color:#ccc;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	color:black;
-	margin-bottom: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    /*width:220px;*/
+    background-color: #4d4d4d;
+    border:none;
+    height: 30px;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    -webkit-appearance:none;
 }
-.totali-percorsi-item-inner-container-title-span
+.popup-lotti-button span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    display: flex;
+    flex-direction: row;
+}
+.popup-lotti-button i
+{
+    color:#ddd;
+    margin-left: 10px;
+}
+.popup-lotti-button:active
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#popupLottiConfirmButton
+{
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    width:220px;
+    background-color: #4d4d4d;
+    border:none;
+    height: 40px;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    -webkit-appearance:none;
+}
+#popupLottiConfirmButton span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    letter-spacing: 2px;
+    display: flex;
+    flex-direction: row;
+}
+#popupLottiConfirmButton span div
+{
+    margin-left: 5px;
+}
+#popupLottiConfirmButton i
+{
+    color:#ddd;
+    margin-left: 10px;
+}
+#popupLottiConfirmButton:active
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.popup-lotti-delete-button
+{
+    height: 20px;
+    width: 20px;
+    color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    margin-left: auto;
+    border:none;
+    background-color: transparent;
+    outline: none;
+}
+button
+{
+    cursor: pointer;
+}
+#popupNuovoLottoCommessa
 {
 	font-family: 'Montserrat',sans-serif;
-	font-weight: normal;
-    font-size:12px;
+    font-size: 12px;
+    color:#ddd;
+    border:2px solid #4d4d4d;
+    background-color: #363636;
+    border-radius: 4px;
+    outline: none;
+    width:100%;
+    box-sizing: border-box;
+    padding:5px;
+    font-weight: normal;
 }
-.totali-percorsi-item-inner-container-title-i
+/*----------------------------------------------------*/
+.container-pannelli-gestione-lotti
 {
-	font-size: 14px;
-	margin-right: 5px;
-}
-.totali-percorsi-item-inner-container-title button
-{
-	height: 25px;
-	outline: none;
-	margin: 0px;
-	padding:0px;
-	padding-left: 5px;
-	padding-right: 5px;
-	margin-left: auto;
-	margin-right: -5px;
-	border-radius: 4px;
-	border: none;
-	background-color: rgb(48, 133, 214);
-	cursor: pointer;
-	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-	color: white;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-}
-.totali-percorsi-item-inner-container-title button span
-{
-	font-family: 'Montserrat',sans-serif;
-	font-weight: normal;
-    font-size:12px;
-}
-.totali-percorsi-item-inner-container-title button i
-{
-	margin-left: 5px;
-}
-.totali-percorsi-item-inner-container-title button:hover
-{
-	opacity: 0.8;
-}
-.totali-percorsi-item-inner-container-span
-{
-	font-family: 'Montserrat',sans-serif;
-	font-weight: normal;
-	font-size:12px;
-	color: black;
-	box-sizing: border-box;
-	padding-left:10px;
-	padding-bottom:10px;
-	padding-right:10px;
-	width: 100%;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-align: left;
-}
-/*---------------------------------------------------*/
-.container-dettaglio-pannelli
-{
-	height: 100%;
-	max-height: 100%;
-	min-height: 100%;
-	width: calc(35% - 10px);
-	margin-left: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	background-color:#f0f0f0;
-	border-radius: 4px;
+    max-height: 100%;
+    min-height: 100%;
+    height: 100%;
+    border-radius: 4px;
 	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
-.dettaglio-pannelli-title-container
+.container-pannelli-gestione-lotti-label
 {
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-	width: 100%;
-	height: 40px;
-	min-height: 40px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	background-color: #404040;
-}
-.dettaglio-pannelli-title
-{
-	font-family: 'Montserrat',sans-serif;
-	color:white;
-	font-weight: normal;
-	font-size:12px;
-	margin-left: 15px;
-}
-.inner-container-dettaglio-pannelli
-{
-	height: calc(100% - 40px);
-	max-height: calc(100% - 40px);
-	min-height: calc(100% - 40px);
-	width: 100%;
-	max-width: 100%;
-	min-width: 100%;
-	overflow: auto;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
-#dettaglioPannelliLabel
-{
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-left: 10px;
+    margin-right: 10px;
     height: 100%;
 }
-#dettaglioPannelliLabel .fa-info-circle
+.container-pannelli-gestione-lotti-label .fa-layer-plus
 {
     font-size: 35px;
 }
-#dettaglioPannelliLabel .fa-mouse-pointer
+.container-pannelli-gestione-lotti-label .fa-sort-alt
 {
     font-size: 35px;
+    transform: rotate(90deg);
 }
-#dettaglioPannelliLabel span
+.container-pannelli-gestione-lotti-label span
 {
     font-size: 14px;
     color:gray;
@@ -554,108 +559,302 @@ body
     margin-top: 10px;
     margin-bottom: 10px;
 }
-#tableDettagliPannelli
+.title-container-pannelli-gestione-lotti
 {
-    width: 100%;
-	border-collapse: collapse;
-	border-radius: 4px;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-}
-#tableDettagliPannelli tr
-{
-
-}
-#tableDettagliPannelli th
-{
+	height: 35px;
+	min-height: 35px;
+	max-height: 35px;
     background-color: #404040;
-    height: 40px;
-    font-family: 'Montserrat',sans-serif;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.title-span-pannelli-gestione-lotti
+{
+    font-size: 12px;
     color:white;
-    font-size: 12px;
-    font-weight: normal;
-    padding-left:10px;
-	padding-right:10px;
-	padding-top:5px;
-	padding-bottom:5px;
-    white-space: nowrap;
-    overflow: hidden;
-	text-align: left;
-}
-#tableDettagliPannelli tr:nth-child(even) {background: rgba(76, 146, 203, 0.199)}
-#tableDettagliPannelli tr:nth-child(odd) {background: rgb(235, 235, 235)}
-#tableDettagliPannelli td
-{
-	text-align: left;
-	padding-left:10px;
-	padding-right:10px;
-	padding-top:5px;
-	padding-bottom:5px;
-	border-right:1px solid #ccc;
 	font-family: 'Montserrat',sans-serif;
-    color:black;
-    font-size: 12px;
-	font-weight: normal;
-	white-space: nowrap;
-    overflow: hidden;
+	margin-left: 10px;
 }
-#tableDettagliPannelli td i
+.title-container-pannelli-gestione-lotti #nPannelliLotto,.title-container-pannelli-gestione-lotti #nPannelli
 {
-    font-size: 15px;
+    margin-left: auto;
 }
-/*-------------------------------------------------------*/
-.popup-cambia-percorso-outer-container
+.title-icon-button-pannelli-gestione-lotti
 {
-	display: flex;
-	align-items: flex-start;
-	justify-content: flex-start;
-	flex-direction: column;
-	width: 100%;
-	max-height: 500px;
-	overflow-y: auto;
-	box-sizing: border-box;
-	padding:10px;
-}
-.popup-cambia-percorso-item
-{
-	display: flex;
-	align-items: flex-start;
-	justify-content: flex-start;
-	flex-direction: column;
-	width: 100%;
+	background-color: transparent;
 	border:none;
-	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	outline: none;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	margin:0px;
+	padding:0px;
+	color:#ddd;
+	font-size: 16px;
+	margin-left: 10px;
+}
+.title-icon-button-pannelli-gestione-lotti:hover
+{
+	opacity: 0.7;
+}
+.title-button-pannelli-gestione-lotti
+{
 	border-radius: 4px;
+	border: 1px solid rgb(76, 145, 203);
+	color:rgb(76, 145, 203);
+	height: 30px;
+	min-height: 30px;
+	max-height: 30px;
+	background-color: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin:0px;
+	padding:0px;
+	padding-left: 10px;
+	padding-right: 10px;
 	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 	cursor: pointer;
-	box-sizing: border-box;
+	outline: none;
+	margin-right: 5px;
+	margin-top: 5px;
+	/*margin-bottom: 5px;*/
+}
+.title-button-pannelli-gestione-lotti span
+{
+	font-family: 'Montserrat',sans-serif;
+	font-weight: normal;
+}
+.title-button-pannelli-gestione-lotti:hover
+{
+	opacity: 0.7;
+}
+.filter-container-pannelli-gestione-lotti
+{
+	height: 40px;
+	min-height: 40px;
+	max-height: 40px;
+    background-color: #404040;
+    display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	/*overflow-x: auto;*/
+}
+.filter-button-pannelli-gestione-lotti
+{
+	border-radius: 4px;
+	border: 1px solid rgb(76, 145, 203);
+	color:rgb(76, 145, 203);
+	height: 30px;
+	min-height: 30px;
+	max-height: 30px;
+	background-color: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin:0px;
 	padding:0px;
-	padding-bottom: 10px;
-	margin-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	cursor: pointer;
+	outline: none;
+	margin-left: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.filter-button-pannelli-gestione-lotti span
+{
+	font-family: 'Montserrat',sans-serif;
+	font-weight: normal;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.filter-button-pannelli-gestione-lotti i
+{
+	margin-left: 5px;
+}
+.filter-button-pannelli-gestione-lotti:hover
+{
+	opacity: 0.7;
+}
+.inner-container-pannelli-gestione-lotti
+{
+    /*margin:5px;*/
+    /*height: calc(100% - 80px);
+    max-height: calc(100% - 80px);
+    min-height: calc(100% - 80px);
+    width: calc(100% - 10px);*/
+    width: 100%;
+    height: calc(100% - 80px);
+    max-height: calc(100% - 80px);
+    min-height: calc(100% - 80px);
+    overflow-y: auto;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border-style:dashed;
+    border-width:3px;
+    border-color:transparent;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    background-color:  #f0f0f0;
+}
+.pannelli-item,.pannelli-lotto-item
+{
+    cursor: grab;
+    width:calc(100% - 10px);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 2px;
 	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    margin:5px;
+    margin-bottom:10px;
+    background-color:white;
+    box-sizing: border-box;
+	transition: background-color 0.3s cubic-bezier(.25,.8,.25,1);
 }
-.popup-cambia-percorso-item:hover
+.pannelli-item .fa-exclamation-circle,.pannelli-lotto-item .fa-exclamation-circle
 {
-	background-color:rgb(48, 133, 214);
-	color:white;
+	color:#DA6969;
+	margin-left: 10px;
 }
-.popup-cambia-percorso-item div
+.pannelli-item span,.pannelli-lotto-item span
 {
+    color: black;
+    font-size: 12px;
+    font-family: 'Montserrat',sans-serif;
+    margin-left: 10px;
+}
+.pannelli-item button,.pannelli-lotto-item button
+{
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	color: black;
+	outline: none;
+	padding:0px;
+	margin:0px;
+	margin-left: auto;
+	height: 30px;
+	padding-right: 10px;
+	padding-left:10px;
+	transition: background-color 0.3s cubic-bezier(.25,.8,.25,1);
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+}
+.pannelli-item button:hover,.pannelli-lotto-item button:hover
+{
+	/*background-color: #4C91CB;*/
+	background-color: #ddd;
+}
+.pannelli-item:hover,.pannelli-lotto-item:hover
+{
+    background-color: #f0f0f0;
+}
+/*-------------------------------------------------------*/
+.popup-filtro-outer-container
+{
+	background-color: white;
+	border-radius: 4px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+	position:absolute;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	flex-direction: column;
+	/*min-height: 300px;
+	min-width: 300px;*/
+	box-sizing: border-box;
+	padding-top: 2.5px;
+	padding-bottom: 2.5px;
+	width: auto;
+	max-height: 500px;
+	overflow-y: auto;
+}
+.popup-filtro-row
+{
+	margin:0px;
+	padding:0px;
+	outline: none;
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	flex-direction: row;
-	width: calc(100% - 20px);
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-top: 10px;
+	box-sizing: border-box;
+	padding-top: 2.5px;
+	padding-bottom: 2.5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
-.popup-cambia-percorso-item div span
+.popup-filtro-row:hover
 {
-	font-size: 12px;
-    color:black;
+	background-color: #f1f1f1;
+}
+.popup-filtro-row input
+{
+	margin:0px;
+	cursor: pointer;
+}
+.popup-filtro-row span
+{
+	margin-left: 5px;
 	font-family: 'Montserrat',sans-serif;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-align: left;
+	font-size: 12px;
+	color: black;
+}
+.popup-filtro-button
+{
+	margin:0px;
+	padding:0px;
+	outline: none;
+	background-color: transparent;
+	cursor: pointer;
+	width: calc(100% - 10px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: row;
+	box-sizing: border-box;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: 2.5px;
+	margin-bottom: 2.5px;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	border-radius: 2px;
+	height: 25px;
+	border:1px solid #ccc;
+}
+.popup-filtro-button:hover
+{
+	background-color: #f1f1f1;
+}
+.popup-filtro-button span
+{
+	margin-right: 5px;
+	font-family: 'Montserrat',sans-serif;
+	font-size: 12px;
+	color: black;
 }

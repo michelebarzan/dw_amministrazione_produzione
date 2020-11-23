@@ -2,15 +2,15 @@
 	include "Session.php";
 	include "connessione.php";
 
-	$pageName="Gestione Lotti";
+	$pageName="Produzione Lotti";
 ?>
 <html>
 	<head>
 		<title><?php echo $pageName; ?></title>
 		<link rel="stylesheet" href="css/struttura.css" />
 		<script src="js/struttura.js"></script>
-        <link rel="stylesheet" href="css/gestioneLotti.css" />
-		<script src="js/gestioneLotti.js"></script>
+        <link rel="stylesheet" href="css/produzioneLotti.css" />
+		<script src="js/produzioneLotti.js"></script>
 		<link rel="stylesheet" href="css/inPageNavBar.css" />
 		<link rel="stylesheet" href="libs/js/spinners/spinner.css" />
 		<script src="libs/js/spinners/spinner.js"></script>
@@ -22,14 +22,14 @@
 		<div class="in-page-nav-bar">
 			<div class="in-page-nav-bar-row"></div>
 			<div class="in-page-nav-bar-row">
-                <button class="in-page-nav-bar-button" onclick="getAnagraficaLotti(this)">
-					<span>Anagrafica lotti</span>
-					<i class="fad fa-database"></i>
+				<button class="in-page-nav-bar-button" onclick="getMascheraMessaInProduzione(this)">
+					<span>Messa in produzione</span>
+					<i class="fad fa-tasks"></i>
 				</button>
-				<button class="in-page-nav-bar-button" id="btnCreazioneLotto" onclick="getMascheraCreazioneLotto(this)">
-					<span>Creazione lotto</span>
-					<i class="fad fa-layer-plus"></i>
-				</button>
+				<!--<button class="in-page-nav-bar-button" onclick="getComposizioneLotti(this)">
+					<span>Composizione lotti</span>
+					<i class="fal fa-table"></i>
+				</button>-->
 			</div>
 		</div>
 		<div class="reusable-control-bar" id="actionBarGestioneLotti" style="display:none"></div>
@@ -40,6 +40,5 @@
     </body>
     <script src="libs/js/multiple-select/multiple-select.min.js"></script>
 	<script src="libs/js/multiple-select/multiple-select-it-IT.js"></script>
-    <link rel="stylesheet" href="libs/js/multiple-select/multiple-select.min.css">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="libs/js/multiple-select/multiple-select.min.css">
 </html>
