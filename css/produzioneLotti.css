@@ -661,3 +661,170 @@ body
 	text-overflow: ellipsis;
 	text-align: left;
 }
+/*--------------------------------------------------------------------*/
+.popup-messa-in-produzione-outer-container
+{
+    margin:20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    width:calc(100% - 40px);
+    /*align-items: center;*/
+    justify-content: flex-start;
+}
+.popup-messa-in-produzione-inner-container
+{
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-height: 550px;
+    overflow-y: auto;
+}
+.popup-messa-in-produzione-row
+{
+    display: flex;
+    width: auto;
+    box-sizing: border-box;
+}
+.popup-messa-in-produzione-row img
+{
+    width: 100px;
+    height: 100px;
+    margin:5px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    border-radius: 4px;
+}
+.popup-messa-in-produzione-select
+{
+    width:150px;
+    background-color: #4d4d4d;
+    border:none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    height: 30px;
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+    -webkit-appearance:none;
+}
+.popup-messa-in-produzione-textarea,.popup-messa-in-produzione-input
+{
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    border:2px solid #4d4d4d;
+    background-color: #363636;
+    border-radius: 4px;
+    outline: none;
+    width:100%;
+    resize: none;
+    overflow: hidden;
+    -webkit-appearance:none;
+    box-sizing: border-box;
+    padding:5px;
+    font-weight: normal;
+}
+.popup-messa-in-produzione-textarea
+{
+    height:60px;
+}
+.popup-messa-in-produzione-button
+{
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    /*width:220px;*/
+    background-color: #4d4d4d;
+    border:none;
+    height: 30px;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    -webkit-appearance:none;
+}
+.popup-messa-in-produzione-button span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    display: flex;
+    flex-direction: row;
+}
+.popup-messa-in-produzione-button i
+{
+    color:#ddd;
+    margin-left: 10px;
+}
+.popup-messa-in-produzione-button:active
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#popupLottiConfirmButton
+{
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    width:220px;
+    background-color: #4d4d4d;
+    border:none;
+    height: 40px;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    -webkit-appearance:none;
+}
+#popupLottiConfirmButton span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    letter-spacing: 2px;
+    display: flex;
+    flex-direction: row;
+}
+#popupLottiConfirmButton span div
+{
+    margin-left: 5px;
+}
+#popupLottiConfirmButton i
+{
+    color:#ddd;
+    margin-left: 10px;
+}
+#popupLottiConfirmButton:active
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.popup-messa-in-produzione-delete-button
+{
+    height: 20px;
+    width: 20px;
+    color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    margin-left: auto;
+    border:none;
+    background-color: transparent;
+    outline: none;
+}

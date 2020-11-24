@@ -1,4 +1,5 @@
 var data;
+var lotti;
 
 /*function getComposizioneLotti(button)
 {
@@ -98,7 +99,7 @@ async function getMascheraMessaInProduzione(button)
     selectLotto.setAttribute("onchange","getPannelliLotto()");
     selectLotto.setAttribute("id","selectLottoGestioneLotti");
 
-    var lotti=await getLotti();
+    lotti=await getLotti();
 
     var dirty_commesse=[];
     lotti.forEach(function (lotto)
@@ -862,21 +863,239 @@ function getPercorsiAlternativi(id_filtro)
 }
 function getPopupMettiInProduzione()
 {
+    var id_lotto=$('#selectLottoGestioneLotti').multipleSelect('getSelects')[0];
+    var lotto=getFirstObjByPropValue(lotti,"id_lotto",id_lotto);
+
+    var outerContainer=document.createElement("div");
+    outerContainer.setAttribute("class","popup-messa-in-produzione-outer-container");
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Nome";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-messa-in-produzione-input");input.setAttribute("type","text");
+    input.setAttribute("id","popupMettiInProduzioneNome");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Note";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var textarea=document.createElement("textarea");
+    textarea.setAttribute("class","popup-messa-in-produzione-input");
+    textarea.setAttribute("id","popupMettiInProduzioneNote");
+    
+    row.appendChild(textarea);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Data inizio produzione";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-messa-in-produzione-input");input.setAttribute("type","date");
+    input.setAttribute("id","popupMettiInProduzioneDataInizioProduzione");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
+    row.innerHTML="Finestra";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-messa-in-produzione-input");input.setAttribute("type","number");
+    input.setAttribute("id","popupMettiInProduzioneFinestra");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    row.setAttribute("class","popup-messa-in-produzione-row");
+    row.setAttribute("style","width:100%;flex-direction:row;align-items:center;justify-content:space-between;flex-direction:row;margin-top:10px");
+
+    var confirmButton=document.createElement("button");
+    confirmButton.setAttribute("class","popup-messa-in-produzione-button");
+    confirmButton.setAttribute("style","width:100%;");
+    confirmButton.setAttribute("onclick","mettiInProduzione()");
+    confirmButton.innerHTML='<span>Conferma</span><i class="fal fa-check-circle"></i>';
+    row.appendChild(confirmButton);    
+
+    outerContainer.appendChild(row);
+
     Swal.fire
     ({
-        icon:"success",
         background:"#404040",
-        title:"Lotto messo in produzione",
+        title:"Nuovo ordine di produzione per il lotto "+lotto.lotto,
+        html:outerContainer.outerHTML,
         allowOutsideClick:true,
+        showCloseButton:true,
+        showConfirmButton:true,
+        allowEscapeKey:true,
+        showCancelButton:false,
         onOpen : function()
                 {
                     document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";
-                    document.getElementsByClassName("swal2-title")[0].style.color="white";
-                    document.getElementsByClassName("swal2-close")[0].style.outline="none";
+                    document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";
+                    document.getElementsByClassName("swal2-title")[0].style.color="#ddd";
+                    document.getElementsByClassName("swal2-title")[0].style.width="100%";
+                    document.getElementsByClassName("swal2-title")[0].style.textDecoration="underline";
+                    document.getElementsByClassName("swal2-close")[0].style.width="40px";
+                    document.getElementsByClassName("swal2-close")[0].style.height="40px";
+                    document.getElementsByClassName("swal2-title")[0].style.margin="0px";
+                    document.getElementsByClassName("swal2-title")[0].style.marginTop="5px";
+                    document.getElementsByClassName("swal2-title")[0].style.fontFamily="'Quicksand',sans-serif";
+                    document.getElementsByClassName("swal2-title")[0].style.textAlign="left";
+                    document.getElementsByClassName("swal2-confirm")[0].style.display="none";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingBottom="0px";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingRight="0px";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingLeft="0px";
+                    document.getElementsByClassName("swal2-popup")[0].style.paddingTop="10px";
+                    document.getElementsByClassName("swal2-header")[0].style.paddingLeft="20px";
                     document.getElementsByClassName("swal2-content")[0].style.padding="0px";
-                },
-        showCloseButton:true,
+                    document.getElementsByClassName("swal2-actions")[0].style.margin="0px";
+                }
+    });
+}
+function mettiInProduzione()
+{
+    var id_lotto=$('#selectLottoGestioneLotti').multipleSelect('getSelects')[0];
+    var note=document.getElementById("popupMettiInProduzioneNote").value;
+    var data_inizio_produzione=document.getElementById("popupMettiInProduzioneDataInizioProduzione").value;
+    var finestra=document.getElementById("popupMettiInProduzioneFinestra").value;
+    var nome=document.getElementById("popupMettiInProduzioneNome").value;
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
         showConfirmButton:false,
-        showCancelButton:false
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    $.get("mettiInProduzioneLottoGestioneLotti.php",
+    {
+        id_lotto,
+        note,
+        data_inizio_produzione,
+        finestra,
+        nome
+    },
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+            else
+            {
+                var id_ordine_di_produzione=response;
+
+                let timerInterval;
+                Swal.fire
+                ({
+                    icon:"success",
+                    title: "Lotto messo in produzione",
+                    background:"#404040",
+                    showCloseButton:false,
+                    showConfirmButton:false,
+                    allowOutsideClick:false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                    onClose: () => {clearInterval(timerInterval)}
+                }).then((result) =>
+                {
+                    Swal.fire
+                    ({
+                        width:"100%",
+                        background:"transparent",
+                        title:"Creazione file linea carpenteria in corso...",
+                        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+                        allowOutsideClick:false,
+                        showCloseButton:false,
+                        showConfirmButton:false,
+                        allowEscapeKey:false,
+                        showCancelButton:false,
+                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+                    });
+
+                    $.get("creaFileLineaCarpenteriaGestioneLotti.php",
+                    {
+                        id_ordine_di_produzione
+                    },
+                    function(response, status)
+                    {
+                        if(status=="success")
+                        {
+                            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                            {
+                                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                                console.log(response);
+                            }
+                            else
+                            {
+                                let timerInterval;
+                                Swal.fire
+                                ({
+                                    icon:"success",
+                                    title: "File linea carpenteria creato",
+                                    background:"#404040",
+                                    showCloseButton:false,
+                                    showConfirmButton:false,
+                                    allowOutsideClick:false,
+                                    timer: 2000,
+                                    timerProgressBar: true,
+                                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                                    onClose: () => {clearInterval(timerInterval)}
+                                }).then((result) =>
+                                {
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+        }
     });
 }
