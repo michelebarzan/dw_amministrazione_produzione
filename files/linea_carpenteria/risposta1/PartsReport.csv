@@ -1,0 +1,14 @@
+﻿Filters:;;;;;;;;;;;
+Start date filter;2020-12-11T00:00:00+01:00;;;;;;;;;;
+End date filter;2020-12-11T23:59:59+01:00;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+Data:;;;;;;;;;;;
+Part name;Last production time;Assembly name;Order number;Total production time;Average production time;Parts done;X-dimension;Y-dimension;Thickness;Material;Weight
+11134;11/12/2020 12:33;TEST IMPIANTO;;00:02:43;00:00:54;1;1800;320;0,9;PVC;0
+11315;11/12/2020 12:33;TEST IMPIANTO;;00:02:43;00:00:54;1;1800;320;0,9;PVC;0
+11291;11/12/2020 12:30;TEST IMPIANTO;;00:00:46;00:00:46;1;1800;660;0,9;PVC;0
+11148;11/12/2020 12:31;TEST IMPIANTO;;00:00:48;00:00:48;1;1850;520;0,9;PVC;0
+11529;11/12/2020 12:32;TEST IMPIANTO;;00:04:29;00:00:54;1;1800;310;0,9;PVC;0
+11356;11/12/2020 12:32;TEST IMPIANTO;;00:04:29;00:00:54;1;1800;310;0,9;PVC;0
+11569;11/12/2020 12:32;TEST IMPIANTO;;00:04:29;00:00:54;1;1800;310;0,9;PVC;0

@@ -1,0 +1,13 @@
+﻿Filters:;;;;;;;;;;
+Start date filter;2020-12-11T00:00:00+01:00;;;;;;;;;
+End date filter;2020-12-11T23:59:59+01:00;;;;;;;;;
+;;;;;;;;;;
+;;;;;;;;;;
+Data:;;;;;;;;;;
+Production order name;Nest name;Part name;Order number;Parts done;Parts in total;Sorting device;Started time;Finished time;Material name;Machine
+test_impianto_1;test_impianto_1001;11134;TEST IMPIANTO;1;1;PART_PICKING;11/12/2020 12:28;11/12/2020 12:35;PVC;SG 16.3 -
+test_impianto_1;test_impianto_1001;11315;TEST IMPIANTO;1;1;PART_PICKING;11/12/2020 12:28;11/12/2020 12:35;PVC;SG 16.3 -
+test_impianto_1;test_impianto_1002;11517;TEST IMPIANTO;1;1;PART_PICKING;11/12/2020 12:35;11/12/2020 12:37;PVC;SG 16.3 -
+test_impianto_1;test_impianto_1002;11574;TEST IMPIANTO;1;1;PART_PICKING;11/12/2020 12:35;11/12/2020 12:37;PVC;SG 16.3 -
+test_impianto_1;test_impianto_1002;11356;TEST IMPIANTO;1;1;PART_PICKING;11/12/2020 12:35;11/12/2020 12:37;PVC;SG 16.3 -
+test_impianto_1;test_impianto_1003;11291;TEST IMPIANTO;1;1;PART_PICKING;11/12/2020 12:35;11/12/2020 12:37;PVC;SG 16.3 -

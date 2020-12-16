@@ -25,13 +25,16 @@
     $result1=sqlsrv_query($conn,$query1);
     if($result1==TRUE)
     {
-        $query2="SELECT MAX(id_ordine_di_produzione) AS id_ordine_di_produzione FROM [dbo].[ordini_di_produzione] WHERE utente=".$_SESSION['id_utente'];
+        $query2="SELECT nome, id_ordine_di_produzione
+                FROM dbo.ordini_di_produzione
+                WHERE (id_ordine_di_produzione = (SELECT MAX(id_ordine_di_produzione) AS id_ordine_di_produzione FROM dbo.ordini_di_produzione AS ordini_di_produzione_1 WHERE (utente = ".$_SESSION['id_utente'].")))";
         $result2=sqlsrv_query($conn,$query2);
         if($result2==TRUE)
         {
             while($row2=sqlsrv_fetch_array($result2))
             {
                 $id_ordine_di_produzione=$row2['id_ordine_di_produzione'];
+                $nome=$row2['nome'];
                 
                 $query3="INSERT INTO [dbo].[distinta_ordini_di_produzione]
                                     ([stazione],[posizione],[numero_cabina],[pannello],[ordine_di_produzione])
@@ -45,7 +48,11 @@
                 if($result3===FALSE)
                     die("error".$query3);
                 else
-                    echo $id_ordine_di_produzione;
+                {
+                    $arrayResponse["id_ordine_di_produzione"]=$id_ordine_di_produzione;
+                    $arrayResponse["nome"]=$nome;
+                    echo json_encode($arrayResponse);
+                }
             }
         }
         else

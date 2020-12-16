@@ -39,7 +39,7 @@ FROM            dw_dati.dbo.general_numbering INNER JOIN
         }
     }
     else
-        die("error");
+        die("error".$query2);
 
     echo json_encode($cabine);
 

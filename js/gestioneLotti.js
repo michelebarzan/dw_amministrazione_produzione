@@ -287,6 +287,8 @@ function aggiungiCabinaLotto(numero_cabina)
 {
     var id_commessa=document.getElementById("selectCommessaGestioneLotti").value;
     var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
+	
+	console.log(id_commessa+" "+id_lotto+" "+numero_cabina);
 
     $.post("aggiungiCabinaLottoGestioneLotti.php",{id_commessa,id_lotto,numero_cabina},
     function(response, status)

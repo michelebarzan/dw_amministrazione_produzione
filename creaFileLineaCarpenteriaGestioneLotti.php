@@ -7,16 +7,17 @@
     set_time_limit(300);
 
     $id_ordine_di_produzione=$_REQUEST["id_ordine_di_produzione"];
+    $nome=$_REQUEST["nome"];
 
     $data=[];
 
     $intestazioni=["OrderID","PartName","QuantityOrdered","QuantityNested","QuantityCompleted","ExtraAllowed","Machine","AssemblyID","DueDate","DateWindow","Priority","ForcedPriority","NextPhase","Status","Material","Thickness","AutoTooling","ScriptTooling","ScriptName","ManualNesting","Drawing","Turret","ProductionLabel","Revision","Note","BendingMode","BendingParameters","StaticNestID","Parameter0","Parameter1","Parameter2","Parameter3","Parameter4","Parameter5","Parameter6","Parameter7"];
     array_push($data,$intestazioni);
 
-    $query1="SELECT        TOP (100) PERCENT OrderID, PartName, COUNT(PartName) AS QuantityOrdered, QuantityNested, QuantityCompleted, ExtraAllowed, Machine, AssemblyID, DueDate, DateWindow, Priority, ForcedPriority, NextPhase, Status, 
-    Material, Thickness, AutoTooling, ScriptTooling, ScriptName, ManualNesting, Drawing, Turret, ProductionLabel, Revision, Note, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, 
-    Parameter3, Parameter4, Parameter5, Parameter6, Parameter7
-FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome AS OrderID, dbo.pannelli.codice_pannello AS PartName,
+    $query1="SELECT        TOP (100) PERCENT OrderID, PartName, 1 AS QuantityOrdered, QuantityNested, QuantityCompleted, ExtraAllowed, Machine, AssemblyID, DueDate, DateWindow, Priority, ForcedPriority, NextPhase, Status, Material, Thickness, 
+    AutoTooling, ScriptTooling, ScriptName, ManualNesting, Drawing, Turret, ProductionLabel, Revision, Note, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, Parameter3, Parameter4, 
+    Parameter5, Parameter6, Parameter7
+FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome AS OrderID, dbo.distinta_ordini_di_produzione.id_distinta AS PartName,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria
                                      WHERE        (nome = 'QuantityNested')) AS QuantityNested,
@@ -89,15 +90,13 @@ FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome A
                                      WHERE        (nome = 'Parameter6')) AS Parameter6,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_2
-                                     WHERE        (nome = 'Parameter7')) AS Parameter7, dbo.ordini_di_produzione.note AS Note
+                                     WHERE        (nome = 'Parameter7')) AS Parameter7, dbo.pannelli.codice_pannello AS Note
      FROM            dbo.lotti INNER JOIN
                                dbo.distinta_ordini_di_produzione INNER JOIN
                                dbo.ordini_di_produzione ON dbo.distinta_ordini_di_produzione.ordine_di_produzione = dbo.ordini_di_produzione.id_ordine_di_produzione INNER JOIN
                                dbo.pannelli ON dbo.distinta_ordini_di_produzione.pannello = dbo.pannelli.id_pannello ON dbo.lotti.id_lotto = dbo.ordini_di_produzione.lotto INNER JOIN
                                dbo.pannelli_madre ON dbo.lotti.commessa = dbo.pannelli_madre.commessa AND dbo.pannelli.codice_pannello = dbo.pannelli_madre.CODPAS
      WHERE        (dbo.ordini_di_produzione.id_ordine_di_produzione = $id_ordine_di_produzione)) AS derivedtbl_1
-GROUP BY OrderID, PartName, QuantityNested, QuantityCompleted, ExtraAllowed, Machine, AssemblyID, DueDate, DateWindow, Priority, ForcedPriority, NextPhase, Status, Material, Thickness, AutoTooling, ScriptTooling, ScriptName, 
-    ManualNesting, Drawing, Turret, ProductionLabel, Note, Revision, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, Parameter3, Parameter4, Parameter5, Parameter6, Parameter7
 ORDER BY AssemblyID";
     $result1=sqlsrv_query($conn,$query1);
     if($result1==TRUE)
@@ -115,7 +114,8 @@ ORDER BY AssemblyID";
             array_push($data,$row);
         }
 
-        $file = fopen("files/linea_carpenteria/test.txt", "w") or die("error");
+        $percorsoInvioFileLineaCarpenteria=getParametro("percorsoInvioFileLineaCarpenteria",$conn);
+        $file = fopen($percorsoInvioFileLineaCarpenteria.$nome.".txt", "w") or die("error");
 
         foreach ($data as $row)
         {
@@ -128,4 +128,18 @@ ORDER BY AssemblyID";
     else
         die("error".$query1);
 
+      function getParametro($nome,$conn)
+      {
+          $query2="SELECT valore FROM parametri WHERE nome='$nome'";
+          $result2=sqlsrv_query($conn,$query2);
+          if($result2==TRUE)
+          {
+              while($row2=sqlsrv_fetch_array($result2))
+              {
+                  return $row2['valore'];
+              }
+          }
+          else
+              die("error".$query2);
+      }
 ?>
