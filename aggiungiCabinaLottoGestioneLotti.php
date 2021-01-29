@@ -12,10 +12,10 @@
                 ([pannello]
                 ,[lotto]
                 ,[numero_cabina])
-            SELECT dbo.view_pannelli_cabine.id_pannello, $id_lotto AS lotto, dw_dati.dbo.general_numbering.numero_cabina
-            FROM dbo.view_pannelli_cabine INNER JOIN
-                                    dw_dati.dbo.general_numbering ON dbo.view_pannelli_cabine.kit_cabina = dw_dati.dbo.general_numbering.kit_cabina
-            WHERE (dw_dati.dbo.general_numbering.commessa = $id_commessa) AND (dw_dati.dbo.general_numbering.numero_cabina = '$numero_cabina')";	
+                SELECT dbo.view_pannelli_cabine.id_pannello, $id_lotto AS lotto, general_numbering_1.numero_cabina AS Expr1
+                FROM dbo.view_pannelli_cabine INNER JOIN
+                    SRV.dw_dati.dbo.general_numbering AS general_numbering_1 ON dbo.view_pannelli_cabine.kit_cabina = general_numbering_1.kit_cabina
+                WHERE (general_numbering_1.commessa =  $id_commessa) AND (general_numbering_1.numero_cabina = '$numero_cabina')";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2===FALSE)
         die("error".$query2);

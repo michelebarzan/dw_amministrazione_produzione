@@ -7,13 +7,13 @@
 
     $cabine=[];
 
-    $query2="SELECT    DISTINCT    dw_dati.dbo.general_numbering.id_gn, dw_dati.dbo.general_numbering.commessa, dw_dati.dbo.general_numbering.ponte, dw_dati.dbo.general_numbering.firezone, dw_dati.dbo.general_numbering.tipo, 
-    dw_dati.dbo.general_numbering.verso, dw_dati.dbo.general_numbering.lato_nave, dw_dati.dbo.general_numbering.kit_cabina, dw_dati.dbo.general_numbering.finitura_A, dw_dati.dbo.general_numbering.finitura_B, 
-    dw_dati.dbo.general_numbering.finitura_C, dw_dati.dbo.general_numbering.settimana, dw_dati.dbo.general_numbering.numero_cabina, dw_dati.dbo.general_numbering.famiglia, 
-    dw_dati.dbo.general_numbering.piano_montaggio
-FROM            dw_dati.dbo.general_numbering INNER JOIN
-    dbo.lotti_pannelli ON dw_dati.dbo.general_numbering.numero_cabina = dbo.lotti_pannelli.numero_cabina
-            WHERE (dw_dati.dbo.general_numbering.commessa = $id_commessa) AND lotti_pannelli.lotto=$id_lotto";	
+    $query2="SELECT DISTINCT general_numbering_1.id_gn, general_numbering_1.commessa, general_numbering_1.ponte, general_numbering_1.firezone, general_numbering_1.tipo, 
+                general_numbering_1.verso, general_numbering_1.lato_nave, general_numbering_1.kit_cabina, general_numbering_1.finitura_A, general_numbering_1.finitura_B, 
+                general_numbering_1.finitura_C, general_numbering_1.settimana, general_numbering_1.numero_cabina, general_numbering_1.famiglia, 
+                general_numbering_1.piano_montaggio
+            FROM srv.dw_dati.dbo.general_numbering AS general_numbering_1 INNER JOIN
+                dbo.lotti_pannelli ON general_numbering_1.numero_cabina = dbo.lotti_pannelli.numero_cabina
+                        WHERE (general_numbering_1.commessa = $id_commessa) AND lotti_pannelli.lotto=$id_lotto";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {

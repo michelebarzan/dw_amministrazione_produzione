@@ -10,9 +10,12 @@ var sortableDropHelper=
 };
 var cabine;
 var cabineLotto;
+var view;
 
-function getAnagraficaLotti(button)
+async function getAnagraficaLotti(button)
 {
+    view="anagrafica_lotti";
+
     $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
     button.style.borderBottomColor="#4C91CB";
     button.style.fontWeight="bold";
@@ -50,6 +53,35 @@ function getAnagraficaLotti(button)
 
     getTable("view_lotti");
 }
+function getLottiGeneralNumbering()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getLottiGeneralNumbering.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
 function getTable(table,orderBy,orderType)
 {
     if(table=="view_lotti")
@@ -73,6 +105,8 @@ function editableTableLoad()
 }
 async function getMascheraCreazioneLotto(button)
 {
+    view="creazione_lotto";
+
     Swal.fire
     ({
         width:"100%",
@@ -133,6 +167,75 @@ async function getMascheraCreazioneLotto(button)
     buttonAggiungiLotto.innerHTML='<span>Aggiungi lotto</span><i style="margin-left:5px" class="fad fa-layer-plus"></i>';
     
     actionBar.appendChild(buttonAggiungiLotto);
+
+    var actionBarItem=document.createElement("div");
+    actionBarItem.setAttribute("class","rcb-select-container");
+    
+    var span=document.createElement("span");
+    span.innerHTML="Importa lotto";
+    actionBarItem.appendChild(span);
+
+    var selectLottoGeneralNumbering=document.createElement("select");
+    selectLottoGeneralNumbering.setAttribute("onchange","importaLottoGeneralNumbering()");
+    selectLottoGeneralNumbering.setAttribute("id","selectLottoGeneralNumbering");
+
+    var option=document.createElement("option");
+    option.setAttribute("value","");
+    option.setAttribute("disabled","disabled");
+    option.setAttribute("selected","selected");
+    option.innerHTML="Scegli";
+    selectLottoGeneralNumbering.appendChild(option);
+
+    var lottiGeneralNumbering=await getLottiGeneralNumbering();
+
+    var dirty_commesse=[];
+    lottiGeneralNumbering.forEach(function (lotto)
+    {
+        dirty_commesse.push(lotto.commessa);
+    });
+    var commesse = [];
+    $.each(dirty_commesse, function(i, el){
+        if($.inArray(el, commesse) === -1) commesse.push(el);
+    });
+    commesse.forEach(function (commessa)
+    {
+        var optgroup=document.createElement("optgroup");
+        optgroup.setAttribute("label",commessa);
+        lottiGeneralNumbering.forEach(function (lotto)
+        {
+            if(lotto.commessa==commessa)
+            {
+                var option=document.createElement("option");
+                option.setAttribute("value",lotto.id_lotto+'|'+lotto.profilo);
+                option.innerHTML=lotto.lotto + " ("+lotto.profilo+")";
+                optgroup.appendChild(option);
+            }
+        });
+        selectLottoGeneralNumbering.appendChild(optgroup);
+    });
+    
+    actionBarItem.appendChild(selectLottoGeneralNumbering);
+    actionBar.appendChild(actionBarItem);
+
+    $("#selectLottoGeneralNumbering").multipleSelect(
+    {
+        single:true,
+        onAfterCreate: function () 
+                {
+                    $(".ms-choice").css({"height":"20px","line-height":"21px","background-color":"transparent","border":"none"});
+                    $(".ms-parent").css({"max-width":"70px"});
+                },
+        onOpen:function()
+        {
+            $(".ms-search input").css({"font-family":"'Montserrat',sans-serif","font-size":"12px","text-align":"left"});
+            $(".optgroup").css({"font-family":"'Montserrat',sans-serif","font-size":"12px"});
+            $(".ms-drop label").css({"text-align":"right"});
+            $(".group label").css({"text-align":"left"});
+        },
+        filter:true,
+        filterPlaceholder:"Cerca...",
+        locale:"it-IT"
+    });
 
     var container=document.getElementById("gestioneLottiContainer");
 
@@ -295,6 +398,7 @@ function aggiungiCabinaLotto(numero_cabina)
     {
         if(status=="success")
         {
+            console.log(response);
             if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
             {
                 Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
@@ -410,7 +514,7 @@ async function getPopupAggiungiLotto()
 
     outerContainer.appendChild(row);
 
-    var row=document.createElement("div");
+    /*var row=document.createElement("div");
     
     row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;");
     row.innerHTML="Commessa";
@@ -436,7 +540,7 @@ async function getPopupAggiungiLotto()
 
     row.appendChild(select);
 
-    outerContainer.appendChild(row);
+    outerContainer.appendChild(row);*/
 
     var row=document.createElement("div");
     
@@ -557,7 +661,7 @@ function creaNuovoLotto()
     var lotto=document.getElementById("popupNuovoLottoLotto").value;
     var descrizione=document.getElementById("popupNuovoLottoDescrizione").value;
     var note=document.getElementById("popupNuovoLottoNote").value;
-    var commessa=document.getElementById("popupNuovoLottoCommessa").value;
+    var commessa=document.getElementById("selectCommessaGestioneLotti").value;
     var wbs=document.getElementById("popupNuovoLottoWbs").value;
     var id_materiale=document.getElementById("popupNuovoLottoId_materiale").value;
 
@@ -837,6 +941,7 @@ async function getInfoLotto()
         filterContainerGestioneLotti.appendChild(button);
 
         cabine=await getCabine();
+        console.log(cabine);
 
         var count=0;
         cabine.forEach(cabina =>
@@ -1204,6 +1309,65 @@ async function creaSelectLotto()
         locale:"it-IT"
     });
 }
+async function creaECambiaSelectLotto(id_lotto)
+{
+    var actionBar=document.getElementById("actionBarGestioneLotti");
+
+    var actionBarItem=document.createElement("div");
+    actionBarItem.setAttribute("class","rcb-select-container");
+    
+    var span=document.createElement("span");
+    span.innerHTML="Lotto";
+    actionBarItem.appendChild(span);
+
+    var selectLotto=document.createElement("select");
+    selectLotto.setAttribute("onchange","getInfoLotto()");
+    selectLotto.setAttribute("id","selectLottoGestioneLotti");
+
+    lotti=await getLotti();
+    
+    lotti.forEach(function (lotto)
+    {
+        var option=document.createElement("option");
+        option.setAttribute("value",lotto.id_lotto);
+        if(id_lotto==lotto.id_lotto)
+            option.setAttribute("selected","selected");
+        option.innerHTML=lotto.lotto;
+        selectLotto.appendChild(option);
+    });
+    
+    actionBarItem.appendChild(selectLotto);
+
+    if(document.getElementById("selectLottoGestioneLotti")==null)
+        actionBar.appendChild(actionBarItem);
+    else
+    {
+        document.getElementById("selectLottoGestioneLotti").parentElement.remove();
+        actionBar.insertBefore(actionBarItem, actionBar.childNodes[1]); 
+    }
+
+    $("#selectLottoGestioneLotti").multipleSelect(
+    {
+        single:true,
+        onAfterCreate: function () 
+                {
+                    $(".ms-choice").css({"height":"20px","line-height":"21px","background-color":"transparent","border":"none"});
+                    $(".ms-parent").css({"max-width":"70px"});
+                    $(".ms-choice").css({"outline":"none"});
+                },
+        onOpen:function()
+        {
+            $(".ms-search input").css({"font-family":"'Montserrat',sans-serif","font-size":"12px","text-align":"left"});
+            $(".optgroup").css({"font-family":"'Montserrat',sans-serif","font-size":"12px"});
+            $(".ms-drop label").css({"text-align":"right"});
+            $(".group label").css({"text-align":"left"});
+        },
+        filter:true,
+        filterPlaceholder:"Cerca...",
+        locale:"it-IT"
+    });
+    getInfoLotto();
+}
 function getFiltriCabine()
 {
     return new Promise(function (resolve, reject) 
@@ -1247,4 +1411,64 @@ function windowClick(e)
             closePopupFiltro();
     }
     catch (error) {}
+}
+function importaLottoGeneralNumbering()
+{
+    var selects=$('#selectLottoGeneralNumbering').multipleSelect('getSelects')[1].split("|");
+    var id_lottoOld=selects[0];
+    var profilo=selects[1];
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+    
+    $.get("importaLottoGeneralNumbering.php",{id_lottoOld,profilo},
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+            else
+            {
+                let timerInterval;
+                Swal.fire
+                ({
+                    icon:"success",
+                    title: "Lotto importato",
+                    background:"#404040",
+                    showCloseButton:false,
+                    showConfirmButton:false,
+                    allowOutsideClick:false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                    onClose: () => {clearInterval(timerInterval)}
+                }).then((result) =>
+                {
+                    var responseObj=JSON.parse(response);
+                    console.log(responseObj);
+                    var id_commessa=responseObj.id_commessa;
+                    var id_lotto=responseObj.id_lotto;
+                    var lotto=responseObj.lotto;
+                    document.getElementById("selectCommessaGestioneLotti").value=id_commessa;
+
+                    creaECambiaSelectLotto(id_lotto);
+                });
+            }
+        }
+    });
 }

@@ -6,7 +6,7 @@
 
     //$filtriCabine=[];
 
-    $query2="SELECT DISTINCT ponte FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT ponte FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -22,7 +22,7 @@
     else
         die("error1".$query2);
 
-    $query2="SELECT DISTINCT firezone FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT firezone FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -38,7 +38,7 @@
     else
         die("error2");
 
-    $query2="SELECT DISTINCT tipo FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT tipo FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -54,7 +54,7 @@
     else
         die("error3");
 
-    $query2="SELECT DISTINCT verso FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT verso FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -70,7 +70,7 @@
     else
         die("error4");
 
-    $query2="SELECT DISTINCT lato_nave FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT lato_nave FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -86,7 +86,7 @@
     else
         die("error5");
 
-    $query2="SELECT DISTINCT finitura_A FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT finitura_A FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -102,7 +102,7 @@
     else
         die("error6");
 
-    $query2="SELECT DISTINCT finitura_B FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT finitura_B FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -118,7 +118,7 @@
     else
         die("error7");
 
-    $query2="SELECT DISTINCT finitura_C FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT finitura_C FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -134,7 +134,7 @@
     else
         die("error8");
 
-    $query2="SELECT DISTINCT settimana FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT settimana FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -150,7 +150,7 @@
     else
         die("error9");
 
-    $query2="SELECT DISTINCT famiglia FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT famiglia FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
@@ -166,7 +166,7 @@
     else
         die("error10");
 
-    $query2="SELECT DISTINCT piano_montaggio FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
+    $query2="SELECT DISTINCT piano_montaggio FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {

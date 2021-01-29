@@ -11,12 +11,12 @@
 
     $data=[];
 
-    $intestazioni=["OrderID","PartName","QuantityOrdered","QuantityNested","QuantityCompleted","ExtraAllowed","Machine","AssemblyID","DueDate","DateWindow","Priority","ForcedPriority","NextPhase","Status","Material","Thickness","AutoTooling","ScriptTooling","ScriptName","ManualNesting","Drawing","Turret","ProductionLabel","Revision","Note","BendingMode","BendingParameters","StaticNestID","Parameter0","Parameter1","Parameter2","Parameter3","Parameter4","Parameter5","Parameter6","Parameter7"];
+    $intestazioni=["OrderID","PartName","QuantityOrdered","QuantityNested","QuantityCompleted","ExtraAllowed","Machine","AssemblyID","DueDate","DateWindow","Priority","ForcedPriority","NextPhase","Status","Material","Thickness","AutoTooling","ScriptTooling","ScriptName","ManualNesting","Drawing","Turret","ProductionLabel","Revision","Note","BendingMode","BendingParameters","StaticNestID","Parameter0","Parameter1","Parameter2","Parameter3","Parameter4","Parameter5","Parameter6","Parameter7","Parameter8"];
     array_push($data,$intestazioni);
 
     $query1="SELECT        TOP (100) PERCENT OrderID, PartName, 1 AS QuantityOrdered, QuantityNested, QuantityCompleted, ExtraAllowed, Machine, AssemblyID, DueDate, DateWindow, Priority, ForcedPriority, NextPhase, Status, Material, Thickness, 
-    AutoTooling, ScriptTooling, ScriptName, ManualNesting, Drawing, Turret, ProductionLabel, Revision, Note, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, Parameter3, Parameter4, 
-    Parameter5, Parameter6, Parameter7
+    AutoTooling, ScriptTooling, ScriptName, ManualNesting, Drawing, Turret, ProductionLabel, Revision, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, Parameter3, Parameter4, Parameter5, 
+    Parameter6, Parameter7, Parameter8, Note
 FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome AS OrderID, dbo.distinta_ordini_di_produzione.id_distinta AS PartName,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria
@@ -60,7 +60,7 @@ FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome A
                                        WHERE        (nome = 'percorso_dxf')), dbo.pannelli_madre.CODSVI) } AS Drawing,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_11
-                                     WHERE        (nome = 'Turret')) AS Turret, { fn CONCAT(dbo.lotti.lotto, { fn CONCAT('_', dbo.pannelli.codice_pannello) }) } AS ProductionLabel, '?' AS Revision,
+                                     WHERE        (nome = 'Turret')) AS Turret, { fn CONCAT(dbo.lotti.lotto, { fn CONCAT('_', dbo.pannelli.codice_pannello) }) } AS ProductionLabel, NULL AS Revision,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_1
                                      WHERE        (nome = 'BendingMode')) AS BendingMode, dbo.pannelli_madre.pannello_madre AS BendingParameters,
@@ -78,25 +78,25 @@ FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome A
                                      WHERE        (nome = 'Parameter2')) AS Parameter2,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_7
-                                     WHERE        (nome = 'Parameter3')) AS Parameter3,
-                                   (SELECT        valore
-                                     FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_5
-                                     WHERE        (nome = 'Parameter4')) AS Parameter4,
+                                     WHERE        (nome = 'Parameter3')) AS Parameter3, CASE WHEN pannelli.halt > 1500 THEN 2 ELSE 1 END AS Parameter4,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_4
-                                     WHERE        (nome = 'Parameter5')) AS Parameter5,
-                                   (SELECT        valore
-                                     FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_3
-                                     WHERE        (nome = 'Parameter6')) AS Parameter6,
+                                     WHERE        (nome = 'Parameter5')) AS Parameter5, dbo.pannelli_madre.parametro_6 AS Parameter6,
                                    (SELECT        valore
                                      FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_2
-                                     WHERE        (nome = 'Parameter7')) AS Parameter7, dbo.pannelli.codice_pannello AS Note
+                                     WHERE        (nome = 'Parameter7')) AS Parameter7,
+                                   (SELECT        valore
+                                     FROM            dbo.parametri_linea_carpenteria AS parametri_linea_carpenteria_2
+                                     WHERE        (nome = 'Parameter8')) AS Parameter8, dbo.pannelli.codice_pannello AS Note
      FROM            dbo.lotti INNER JOIN
                                dbo.distinta_ordini_di_produzione INNER JOIN
                                dbo.ordini_di_produzione ON dbo.distinta_ordini_di_produzione.ordine_di_produzione = dbo.ordini_di_produzione.id_ordine_di_produzione INNER JOIN
                                dbo.pannelli ON dbo.distinta_ordini_di_produzione.pannello = dbo.pannelli.id_pannello ON dbo.lotti.id_lotto = dbo.ordini_di_produzione.lotto INNER JOIN
                                dbo.pannelli_madre ON dbo.lotti.commessa = dbo.pannelli_madre.commessa AND dbo.pannelli.codice_pannello = dbo.pannelli_madre.CODPAS
-     WHERE        (dbo.ordini_di_produzione.id_ordine_di_produzione = $id_ordine_di_produzione)) AS derivedtbl_1
+     WHERE        (dbo.ordini_di_produzione.id_ordine_di_produzione = $id_ordine_di_produzione) AND (dbo.distinta_ordini_di_produzione.stazione =
+                                   (SELECT        id_stazione
+                                     FROM            dbo.stazioni
+                                     WHERE        (nome = 'linea_carpenteria')))) AS derivedtbl_1
 ORDER BY AssemblyID";
     $result1=sqlsrv_query($conn,$query1);
     if($result1==TRUE)
@@ -115,7 +115,7 @@ ORDER BY AssemblyID";
         }
 
         $percorsoInvioFileLineaCarpenteria=getParametro("percorsoInvioFileLineaCarpenteria",$conn);
-        $file = fopen($percorsoInvioFileLineaCarpenteria.$nome.".txt", "w") or die("error");
+        $file = fopen($percorsoInvioFileLineaCarpenteria.$nome.".txt", "w") or die("error1");
 
         foreach ($data as $row)
         {
@@ -126,7 +126,9 @@ ORDER BY AssemblyID";
         fclose($file);
     }
     else
-        die("error".$query1);
+    {
+      die("error2\n\n".$query1."\n\n".print_r(sqlsrv_errors(),TRUE));
+    }
 
       function getParametro($nome,$conn)
       {
@@ -140,6 +142,6 @@ ORDER BY AssemblyID";
               }
           }
           else
-              die("error".$query2);
+              die("error3".$query2);
       }
 ?>

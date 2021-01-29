@@ -304,7 +304,7 @@ async function getPannelliLotto()
     var id_lotto=$('#selectLottoGestioneLotti').multipleSelect('getSelects')[0];
 
     data=await getViewMessaInProduzioneLotti(id_lotto);
-    //console.log(data);
+    console.log(data);
 
     var containerTotaliPercorsi=document.createElement("div");
     containerTotaliPercorsi.setAttribute("class","container-totali-percorsi");

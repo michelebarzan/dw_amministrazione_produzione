@@ -1,0 +1,14 @@
+OrderID	PartName	QuantityOrdered	QuantityNested	QuantityCompleted	ExtraAllowed	Machine	AssemblyID	DueDate	DateWindow	Priority	ForcedPriority	NextPhase	Status	Material	Thickness	AutoTooling	ScriptTooling	ScriptName	ManualNesting	Drawing	Turret	ProductionLabel	Revision	Note	BendingMode	BendingParameters	StaticNestID	Parameter0	Parameter1	Parameter2	Parameter3	Parameter4	Parameter5	Parameter6	Parameter7	Parameter8
+2801	12915	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00002		2801_PK-00002		PK-00002	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12916	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00003		2801_PK-00003		PK-00003	1	mb-STD-0-x-p-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12917	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00004		2801_PK-00004		PK-00004	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12918	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00005		2801_PK-00005		PK-00005	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12919	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00006		2801_PK-00006		PK-00006	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12920	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00006		2801_PK-00006		PK-00006	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12921	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00007		2801_PK-00007		PK-00007	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12922	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00008		2801_PK-00008		PK-00008	1	mb-STD-0-x-p-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12923	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00009		2801_PK-00009		PK-00009	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12924	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00010		2801_PK-00010		PK-00010	1	mb-STD-0-x-p-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12925	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00011		2801_PK-00011		PK-00011	1	mb-STD-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12943	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00012		2801_PK-00012		PK-00012	1	mb-SPC-0-x-c-09.pfp		1	1	1	1	2	1	1	1	-1
+2801	12944	1	0	0	0	SG_DE_WAVE	3059	29/01/2021	5	5	0			DC01	0.9	-1	0		0	\\SRV-DEW-PRD1\DXF_linea_carpenteria\SX-00013		2801_PK-00013		PK-00013	1	mb-SPC-0-x-p-09.pfp		1	1	1	1	2	1	1	1	-1

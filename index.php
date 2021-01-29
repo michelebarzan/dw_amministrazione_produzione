@@ -40,6 +40,10 @@
 						<i class="fad fa-layer-plus"></i>
 						<div>Gestione Lotti</div>
 					</div>
+					<div class="homepageLink" data-tooltip="Gestione Database" onclick="gotopath('gestioneDatabase.php')">
+						<i class="fad fa-database"></i>
+						<div>Gestione Database</div>
+					</div>
 				</div>
 				<div id="statisticheSwContainer"></div>
 			</div>

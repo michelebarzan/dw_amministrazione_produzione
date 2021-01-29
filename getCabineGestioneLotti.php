@@ -7,7 +7,7 @@
 
     $cabine=[];
 
-    $query2="SELECT * FROM dw_dati.dbo.general_numbering WHERE commessa=$id_commessa AND numero_cabina NOT IN (SELECT numero_cabina FROM lotti_pannelli WHERE lotto=$id_lotto)";	
+    $query2="SELECT * FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa AND numero_cabina NOT IN (SELECT numero_cabina FROM lotti_pannelli WHERE lotto=$id_lotto)";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
