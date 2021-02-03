@@ -38,6 +38,22 @@
     else
         die("error2");
 
+    $query2="SELECT DISTINCT kit_cabina FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa AND kit_cabina IS NOT NULL";	
+    $result2=sqlsrv_query($conn,$query2);
+    if($result2==TRUE)
+    {
+        $filtro=[];
+		while($row2=sqlsrv_fetch_array($result2))
+        {
+            $element["valore"]=$row2["kit_cabina"];
+            $element["checked"]=true;
+            array_push($filtro,$element);
+        }
+        $filtriCabine["kit_cabina"]=$filtro;
+    }
+    else
+        die("error2");
+
     $query2="SELECT DISTINCT tipo FROM srv.dw_dati.dbo.general_numbering WHERE commessa=$id_commessa";	
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)

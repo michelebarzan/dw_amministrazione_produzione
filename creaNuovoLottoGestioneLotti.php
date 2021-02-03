@@ -15,5 +15,20 @@
     $result2=sqlsrv_query($conn,$query2);
     if($result2===FALSE)
         die("error".$query2);
+    else
+    {
+        $query3="SELECT MAX(id_lotto) AS id_lotto FROM lotti WHERE utente=".$_SESSION['id_utente'];	
+        $result3=sqlsrv_query($conn,$query3);
+        if($result3==TRUE)
+        {
+            $filtro=[];
+            while($row3=sqlsrv_fetch_array($result3))
+            {
+                echo $row3["id_lotto"];
+            }
+        }
+        else
+            die("error1");
+    }
 
 ?>

@@ -10,6 +10,7 @@ var sortableDropHelper=
 };
 var cabine;
 var cabineLotto;
+var cabineFiltrate=[];
 var view;
 
 async function getAnagraficaLotti(button)
@@ -302,6 +303,7 @@ async function getMascheraCreazioneLotto(button)
     var button=document.createElement("button");
     button.setAttribute("class","title-button-pannelli-gestione-lotti");
     button.setAttribute("style","margin-left:auto");
+    button.setAttribute("disabled","disabled");
     button.setAttribute("id","btnItemsCreazioneLottoPannelli");
     button.setAttribute("onclick","itemsCreazioneLotto='pannelli';getInfoLotto()");
     var span=document.createElement("span");
@@ -713,7 +715,10 @@ function creaNuovoLotto()
                         onClose: () => {clearInterval(timerInterval)}
                     }).then((result) =>
                     {
-                        getMascheraCreazioneLotto(document.getElementById("btnCreazioneLotto"));
+                        //getMascheraCreazioneLotto(document.getElementById("btnCreazioneLotto"));
+                        document.getElementById("selectCommessaGestioneLotti").value=commessa;
+
+                        creaECambiaSelectLotto(response);
                     });
                 }
             }
@@ -741,12 +746,15 @@ async function aggiungiTuttoAlLotto()
     }
     else
     {
-        for (let index = 0; index < cabine.length; index++)
+        console.log(cabineFiltrate);
+        for (let index = 0; index < cabineFiltrate.length; index++)
         {
-            const cabina = cabine[index];
-            var responte=await asyncAggiungiCabinaLotto(cabina.numero_cabina);
+            const cabina = cabineFiltrate[index];
+            var response=await asyncAggiungiCabinaLotto(cabina.numero_cabina);
+            console.log(response);
         }
     }
+    Swal.close();
     getInfoLotto();
 }
 function asyncAggiungiCabinaLotto(numero_cabina)
@@ -768,210 +776,265 @@ function asyncAggiungiCabinaLotto(numero_cabina)
 }
 async function getInfoLotto()
 {
-    Swal.fire
-    ({
-        width:"100%",
-        background:"transparent",
-        title:"Caricamento in corso...",
-        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
-        allowOutsideClick:false,
-        showCloseButton:false,
-        showConfirmButton:false,
-        allowEscapeKey:false,
-        showCancelButton:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
-    });
-
     var id_lotto=document.getElementById("selectLottoGestioneLotti").value;
-    var lotto=getFirstObjByPropValue(lotti,"id_lotto",id_lotto);
-
-    document.getElementById("btnItemsCreazioneLottoCabine").style.backgroundColor="";
-    document.getElementById("btnItemsCreazioneLottoCabine").style.color="";
-    document.getElementById("btnItemsCreazioneLottoPannelli").style.backgroundColor="";
-    document.getElementById("btnItemsCreazioneLottoPannelli").style.color="";
-
-    if(itemsCreazioneLotto=="pannelli")
+    if(id_lotto!=="")
     {
-        document.getElementById("labelDisponibili").innerHTML="Pannelli disponibili";
-        document.getElementById("labelAggiunti").innerHTML="Pannelli aggiunti al lotto";
-        document.getElementById("labelTrascina").innerHTML="Trascina i pannelli";
+        cabineFiltrate=[];
+        Swal.fire
+        ({
+            width:"100%",
+            background:"transparent",
+            title:"Caricamento in corso...",
+            html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+            allowOutsideClick:false,
+            showCloseButton:false,
+            showConfirmButton:false,
+            allowEscapeKey:false,
+            showCancelButton:false,
+            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+        });
 
-        document.getElementById("btnItemsCreazioneLottoPannelli").style.backgroundColor="rgb(76, 145, 203)";
-        document.getElementById("btnItemsCreazioneLottoPannelli").style.color="#ddd";
-        /*var pannelliLotto=await getPannelliLotto(id_lotto);
-        console.log(pannelliLotto);*/
-    }
-    else
-    {
-        if(filtriCabine==null)
-            filtriCabine=await getFiltriCabine();
+        var lotto=getFirstObjByPropValue(lotti,"id_lotto",id_lotto);
 
-        document.getElementById("labelDisponibili").innerHTML="Cabine disponibili";
-        document.getElementById("labelAggiunti").innerHTML="Cabine aggiunte al lotto";
-        document.getElementById("labelTrascina").innerHTML="Trascina le cabine";
+        document.getElementById("btnItemsCreazioneLottoCabine").style.backgroundColor="";
+        document.getElementById("btnItemsCreazioneLottoCabine").style.color="";
+        document.getElementById("btnItemsCreazioneLottoPannelli").style.backgroundColor="";
+        document.getElementById("btnItemsCreazioneLottoPannelli").style.color="";
 
-        var pannelliContainer=document.getElementById("pannelliContainer");
-        pannelliContainer.innerHTML="";
-
-        document.getElementById("btnItemsCreazioneLottoCabine").style.backgroundColor="rgb(76, 145, 203)";
-        document.getElementById("btnItemsCreazioneLottoCabine").style.color="#ddd";
-
-        var filterContainerGestioneLotti=document.getElementById("filterContainerGestioneLotti");
-        filterContainerGestioneLotti.innerHTML="";
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'ponte')");
-        var span=document.createElement("span");
-        span.innerHTML="Ponte";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'firezone')");
-        var span=document.createElement("span");
-        span.innerHTML="Firezone";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'tipo')");
-        var span=document.createElement("span");
-        span.innerHTML="Tipo";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'verso')");
-        var span=document.createElement("span");
-        span.innerHTML="Verso";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'lato_nave')");
-        var span=document.createElement("span");
-        span.innerHTML="Lato nave";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_A')");
-        var span=document.createElement("span");
-        span.innerHTML="Finitura A";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_B')");
-        var span=document.createElement("span");
-        span.innerHTML="Finitura B";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_C')");
-        var span=document.createElement("span");
-        span.innerHTML="Finitura C";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'settimana')");
-        var span=document.createElement("span");
-        span.innerHTML="Settimana";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'famiglia')");
-        var span=document.createElement("span");
-        span.innerHTML="Famiglia";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        var button=document.createElement("button");
-        button.setAttribute("class","filter-button-pannelli-gestione-lotti");
-        button.setAttribute("onclick","getPupupFiltro(this,event,'piano_montaggio')");
-        var span=document.createElement("span");
-        span.innerHTML="Piano montaggio";
-        button.appendChild(span);
-        var i=document.createElement("i");
-        i.setAttribute("class","fas fa-filter");
-        button.appendChild(i);
-        filterContainerGestioneLotti.appendChild(button);
-
-        cabine=await getCabine();
-        console.log(cabine);
-
-        var count=0;
-        cabine.forEach(cabina =>
+        if(itemsCreazioneLotto=="pannelli")
         {
-            var keep=true;
-            for (var colonna in cabina)
+            document.getElementById("labelDisponibili").innerHTML="Pannelli disponibili";
+            document.getElementById("labelAggiunti").innerHTML="Pannelli aggiunti al lotto";
+            document.getElementById("labelTrascina").innerHTML="Trascina i pannelli";
+
+            document.getElementById("btnItemsCreazioneLottoPannelli").style.backgroundColor="rgb(76, 145, 203)";
+            document.getElementById("btnItemsCreazioneLottoPannelli").style.color="#ddd";
+            /*var pannelliLotto=await getPannelliLotto(id_lotto);
+            console.log(pannelliLotto);*/
+        }
+        else
+        {
+            if(filtriCabine==null)
+                filtriCabine=await getFiltriCabine();
+
+            document.getElementById("labelDisponibili").innerHTML="Cabine disponibili";
+            document.getElementById("labelAggiunti").innerHTML="Cabine aggiunte al lotto";
+            document.getElementById("labelTrascina").innerHTML="Trascina le cabine";
+
+            var pannelliContainer=document.getElementById("pannelliContainer");
+            pannelliContainer.innerHTML="";
+
+            document.getElementById("btnItemsCreazioneLottoCabine").style.backgroundColor="rgb(76, 145, 203)";
+            document.getElementById("btnItemsCreazioneLottoCabine").style.color="#ddd";
+
+            var filterContainerGestioneLotti=document.getElementById("filterContainerGestioneLotti");
+            filterContainerGestioneLotti.innerHTML="";
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'ponte')");
+            var span=document.createElement("span");
+            span.innerHTML="Ponte";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'firezone')");
+            var span=document.createElement("span");
+            span.innerHTML="Firezone";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'kit_cabina')");
+            var span=document.createElement("span");
+            span.innerHTML="Codice cabina";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'famiglia')");
+            var span=document.createElement("span");
+            span.innerHTML="Famiglia";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'tipo')");
+            var span=document.createElement("span");
+            span.innerHTML="Tipo";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'verso')");
+            var span=document.createElement("span");
+            span.innerHTML="Verso";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'lato_nave')");
+            var span=document.createElement("span");
+            span.innerHTML="Lato nave";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_A')");
+            var span=document.createElement("span");
+            span.innerHTML="Finitura A";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_B')");
+            var span=document.createElement("span");
+            span.innerHTML="Finitura B";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'finitura_C')");
+            var span=document.createElement("span");
+            span.innerHTML="Finitura C";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'settimana')");
+            var span=document.createElement("span");
+            span.innerHTML="Settimana";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            var button=document.createElement("button");
+            button.setAttribute("class","filter-button-pannelli-gestione-lotti");
+            button.setAttribute("onclick","getPupupFiltro(this,event,'piano_montaggio')");
+            var span=document.createElement("span");
+            span.innerHTML="Piano montaggio";
+            button.appendChild(span);
+            var i=document.createElement("i");
+            i.setAttribute("class","fas fa-filter");
+            button.appendChild(i);
+            filterContainerGestioneLotti.appendChild(button);
+
+            cabine=await getCabine();
+            console.log(cabine);
+
+            var count=0;
+            cabine.forEach(cabina =>
             {
-                if (Object.prototype.hasOwnProperty.call(cabina, colonna))
+                var keep=true;
+                for (var colonna in cabina)
                 {
-                    if(filtriCabine[colonna]!=undefined)
+                    if (Object.prototype.hasOwnProperty.call(cabina, colonna))
                     {
-                        var valori=[];
-                        filtriCabine[colonna].forEach(filtro =>
+                        if(filtriCabine[colonna]!=undefined)
                         {
-                            if(filtro.checked)
+                            var valori=[];
+                            filtriCabine[colonna].forEach(filtro =>
                             {
-                                valori.push(filtro.valore);
-                            }
-                        });
-                        if(!valori.includes(cabina[colonna]))
-                            keep=false;
+                                if(filtro.checked)
+                                {
+                                    valori.push(filtro.valore);
+                                }
+                            });
+                            if(!valori.includes(cabina[colonna]))
+                                keep=false;
+                        }
                     }
                 }
-            }
-            if(keep)
+                if(keep)
+                {
+                    cabineFiltrate.push(cabina);
+                    count++;
+                    var item=document.createElement("div");
+                    item.setAttribute("class","pannelli-item");
+                    if(count==cabine.length-1)
+                    {
+                        item.setAttribute("style","margin-bottom:0px");
+                    }
+
+                    item.setAttribute("numero_cabina",cabina.numero_cabina);
+                    item.setAttribute("kit_cabina",cabina.kit_cabina);
+                    item.setAttribute("id_gn",cabina.id_gn);
+
+                    var span=document.createElement("span");
+                    span.innerHTML=cabina.numero_cabina;
+                    item.appendChild(span);
+
+                    var span=document.createElement("span");
+                    span.setAttribute("style","margin-left:10px");
+                    span.innerHTML=cabina.kit_cabina;
+                    item.appendChild(span);
+
+                    /*var button=document.createElement("button");
+                    button.setAttribute("onclick","rimuoviStazionePercorso("+stazione.id_stazione+",true)");
+                    button.setAttribute("title","Rimuovi stazione");
+                    button.innerHTML='<i class="fas fa-minus"></i>';
+                    item.appendChild(button);*/
+
+                    pannelliContainer.appendChild(item);
+                }
+            });
+
+            var pannelliLottoContainer=document.getElementById("pannelliLottoContainer");
+            pannelliLottoContainer.innerHTML="";
+
+            cabineLotto=await getCabineLotto();
+            console.log(cabineLotto);
+
+            var count=0;
+            cabineLotto.forEach(cabina =>
             {
                 count++;
                 var item=document.createElement("div");
-                item.setAttribute("class","pannelli-item");
-                if(count==cabine.length-1)
+                item.setAttribute("class","pannelli-lotto-item");
+                if(count==cabineLotto.length-1)
                 {
                     item.setAttribute("style","margin-bottom:0px");
                 }
@@ -995,50 +1058,11 @@ async function getInfoLotto()
                 button.innerHTML='<i class="fas fa-minus"></i>';
                 item.appendChild(button);*/
 
-                pannelliContainer.appendChild(item);
-            }
-        });
-
-        var pannelliLottoContainer=document.getElementById("pannelliLottoContainer");
-        pannelliLottoContainer.innerHTML="";
-
-        cabineLotto=await getCabineLotto();
-        console.log(cabineLotto);
-
-        var count=0;
-        cabineLotto.forEach(cabina =>
-        {
-            count++;
-            var item=document.createElement("div");
-            item.setAttribute("class","pannelli-lotto-item");
-            if(count==cabineLotto.length-1)
-            {
-                item.setAttribute("style","margin-bottom:0px");
-            }
-
-            item.setAttribute("numero_cabina",cabina.numero_cabina);
-            item.setAttribute("kit_cabina",cabina.kit_cabina);
-            item.setAttribute("id_gn",cabina.id_gn);
-
-            var span=document.createElement("span");
-            span.innerHTML=cabina.numero_cabina;
-            item.appendChild(span);
-
-            var span=document.createElement("span");
-            span.setAttribute("style","margin-left:10px");
-            span.innerHTML=cabina.kit_cabina;
-            item.appendChild(span);
-
-            /*var button=document.createElement("button");
-            button.setAttribute("onclick","rimuoviStazionePercorso("+stazione.id_stazione+",true)");
-            button.setAttribute("title","Rimuovi stazione");
-            button.innerHTML='<i class="fas fa-minus"></i>';
-            item.appendChild(button);*/
-
-            pannelliLottoContainer.appendChild(item);
-        });
+                pannelliLottoContainer.appendChild(item);
+            });
+        }
+        Swal.close();
     }
-    Swal.close();
 }
 function getCabineLotto()
 {
@@ -1138,6 +1162,8 @@ function getPupupFiltro(button,event,colonna)
         var checkbox=document.createElement("input");
         checkbox.setAttribute("type","checkbox");
         checkbox.setAttribute("class","popup-filtro-item popup-filtro-checkbox"+colonna);
+        /*if(colonna="kit_cabina")
+        console.log(filtro.valore);*/
         checkbox.setAttribute("valore",filtro.valore);
         checkbox.setAttribute("onclick","stopCheckboxPropagation(event);checkCheckbox(this,'"+colonna+"','"+filtro.valore+"')");
         if(filtro.checked)
@@ -1192,7 +1218,7 @@ function getValoriFiltriCabine(colonna)
     {
         const checkbox = checkboxes[index];
         var valore=checkbox.getAttribute("valore");
-        
+
         filtriCabine[colonna].forEach(filtro =>
         {
             if(filtro.valore==valore)
@@ -1255,6 +1281,11 @@ function getPannelliLotto(id_lotto)
 }
 async function creaSelectLotto()
 {
+    try {
+        document.getElementById("pannelliLottoContainer").innerHTML="";
+        document.getElementById("pannelliContainer").innerHTML="";
+    } catch (error) {}
+
     var actionBar=document.getElementById("actionBarGestioneLotti");
 
     var actionBarItem=document.createElement("div");
@@ -1267,6 +1298,14 @@ async function creaSelectLotto()
     var selectLotto=document.createElement("select");
     selectLotto.setAttribute("onchange","getInfoLotto()");
     selectLotto.setAttribute("id","selectLottoGestioneLotti");
+    selectLotto.setAttribute("style","text-decoration:none");
+
+    var option=document.createElement("option");
+    option.setAttribute("value","");
+    option.setAttribute("disabled","disabled");
+    option.setAttribute("selected","selected");
+    option.innerHTML="Scegli";
+    selectLotto.appendChild(option);
 
     lotti=await getLotti();
     
@@ -1288,7 +1327,7 @@ async function creaSelectLotto()
         actionBar.insertBefore(actionBarItem, actionBar.childNodes[1]); 
     }
 
-    $("#selectLottoGestioneLotti").multipleSelect(
+    /*$("#selectLottoGestioneLotti").multipleSelect(
     {
         single:true,
         onAfterCreate: function () 
@@ -1307,7 +1346,7 @@ async function creaSelectLotto()
         filter:true,
         filterPlaceholder:"Cerca...",
         locale:"it-IT"
-    });
+    });*/
 }
 async function creaECambiaSelectLotto(id_lotto)
 {
@@ -1323,6 +1362,7 @@ async function creaECambiaSelectLotto(id_lotto)
     var selectLotto=document.createElement("select");
     selectLotto.setAttribute("onchange","getInfoLotto()");
     selectLotto.setAttribute("id","selectLottoGestioneLotti");
+    selectLotto.setAttribute("style","text-decoration:none");
 
     lotti=await getLotti();
     
@@ -1346,7 +1386,7 @@ async function creaECambiaSelectLotto(id_lotto)
         actionBar.insertBefore(actionBarItem, actionBar.childNodes[1]); 
     }
 
-    $("#selectLottoGestioneLotti").multipleSelect(
+    /*$("#selectLottoGestioneLotti").multipleSelect(
     {
         single:true,
         onAfterCreate: function () 
@@ -1365,7 +1405,7 @@ async function creaECambiaSelectLotto(id_lotto)
         filter:true,
         filterPlaceholder:"Cerca...",
         locale:"it-IT"
-    });
+    });*/
     getInfoLotto();
 }
 function getFiltriCabine()
