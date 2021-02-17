@@ -1,3 +1,5 @@
+var hot;
+
 function getMascheraNomiPannelliMadre(button)
 {
     $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
@@ -49,6 +51,8 @@ async function getTabellaNomiPannelliMadre()
 
     if(nomiPannelliMadre.data.length>0)
     {
+		if(hot!=undefined)
+			hot.destroy();
         hot = new Handsontable
         (
             container,

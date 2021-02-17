@@ -1033,6 +1033,43 @@ function getPopupMettiInProduzione()
     outerContainer.appendChild(row);
 
     var row=document.createElement("div");
+    row.setAttribute("style","display:flex;flex-direction:row;width:100%;margin-top:10px;justify-content:flex-start;align-items:center;margin-bottom:5px");
+
+    var checkbox=document.createElement("input");
+    checkbox.setAttribute("type","checkbox");
+    checkbox.setAttribute("id","popupMettiInProduzioneProduzionePerCabina");
+    checkbox.setAttribute("onchange","if(this.checked){$('.popup-messa-in-produzione-assemblyID-items').hide();}else{$('.popup-messa-in-produzione-assemblyID-items').show();}");
+    checkbox.setAttribute("checked","checked");
+    checkbox.setAttribute("style","margin:0px;margin-right:5px;");
+    row.appendChild(checkbox);
+
+    var label=document.createElement("span");
+    label.setAttribute("style","width:100%;color:#ddd;text-align:left;font-size:12px;font-family: 'Quicksand',sans-serif;margin-left:7px");
+    label.innerHTML="Produzione per cabina";
+    row.appendChild(label);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    
+    row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Quicksand',sans-serif;margin-bottom:5px;display:none;margin-top:5px");
+    row.setAttribute("class","popup-messa-in-produzione-assemblyID-items");
+    row.innerHTML="Assembly ID";
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    row.setAttribute("class","popup-messa-in-produzione-assemblyID-items");
+    row.setAttribute("style","width:100%;margin-bottom:5px;justify-content:flex-start;display:none");
+
+    var input=document.createElement("input");
+    input.setAttribute("class","popup-messa-in-produzione-input");input.setAttribute("type","text");
+    input.setAttribute("id","popupMettiInProduzioneAssemblyID");
+    
+    row.appendChild(input);
+
+    outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
     row.setAttribute("class","popup-messa-in-produzione-row");
     row.setAttribute("style","width:100%;flex-direction:row;align-items:center;justify-content:space-between;flex-direction:row;margin-top:10px");
 
@@ -1086,109 +1123,151 @@ function mettiInProduzione()
     var data_inizio_produzione=document.getElementById("popupMettiInProduzioneDataInizioProduzione").value;
     var finestra=document.getElementById("popupMettiInProduzioneFinestra").value;
     var nome=document.getElementById("popupMettiInProduzioneNome").value;
+    var produzionePerCabina=document.getElementById("popupMettiInProduzioneProduzionePerCabina").checked;
+    var assemblyID=document.getElementById("popupMettiInProduzioneAssemblyID").value;
 
-    Swal.fire
-    ({
-        width:"100%",
-        background:"transparent",
-        title:"Caricamento in corso...",
-        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
-        allowOutsideClick:false,
-        showCloseButton:false,
-        showConfirmButton:false,
-        allowEscapeKey:false,
-        showCancelButton:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
-    });
-
-    $.get("mettiInProduzioneLottoGestioneLotti.php",
+    if(nome=="" || data_inizio_produzione=="" || finestra=="")
     {
-        id_lotto,
-        note,
-        data_inizio_produzione,
-        finestra,
-        nome
-    },
-    function(response, status)
-    {
-        if(status=="success")
+        Swal.fire
+        ({
+            icon:"error",
+            title: "Compila i campi nome, data inizio produzione e finestra",
+            background:"#404040",
+            showCloseButton:true,
+            showConfirmButton:false,
+            allowOutsideClick:false,
+            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+        }).then((result) =>
         {
-            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            getPopupMettiInProduzione();
+        });
+    }
+    else
+    {
+        if(produzionePerCabina==false && assemblyID=="")
+        {
+            Swal.fire
+            ({
+                icon:"error",
+                title: "Compila il campo assembly ID",
+                background:"#404040",
+                showCloseButton:true,
+                showConfirmButton:false,
+                allowOutsideClick:false,
+                onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+            }).then((result) =>
             {
-                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                console.log(response);
-            }
-            else
-            {
-                var arrayResponse=JSON.parse(response);
-                var id_ordine_di_produzione=arrayResponse.id_ordine_di_produzione;
-
-                let timerInterval;
-                Swal.fire
-                ({
-                    icon:"success",
-                    title: "Lotto messo in produzione",
-                    background:"#404040",
-                    showCloseButton:false,
-                    showConfirmButton:false,
-                    allowOutsideClick:false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
-                    onClose: () => {clearInterval(timerInterval)}
-                }).then((result) =>
-                {
-                    Swal.fire
-                    ({
-                        width:"100%",
-                        background:"transparent",
-                        title:"Creazione file linea carpenteria in corso...",
-                        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
-                        allowOutsideClick:false,
-                        showCloseButton:false,
-                        showConfirmButton:false,
-                        allowEscapeKey:false,
-                        showCancelButton:false,
-                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
-                    });
-
-                    $.get("creaFileLineaCarpenteriaGestioneLotti.php",
-                    {
-                        id_ordine_di_produzione,
-                        nome:arrayResponse.nome
-                    },
-                    function(response, status)
-                    {
-                        if(status=="success")
-                        {
-                            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-                            {
-                                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                                console.log(response);
-                            }
-                            else
-                            {
-                                let timerInterval;
-                                Swal.fire
-                                ({
-                                    icon:"success",
-                                    title: "File linea carpenteria creato",
-                                    background:"#404040",
-                                    showCloseButton:false,
-                                    showConfirmButton:false,
-                                    allowOutsideClick:false,
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
-                                    onClose: () => {clearInterval(timerInterval)}
-                                }).then((result) =>
-                                {
-                                });
-                            }
-                        }
-                    });
-                });
-            }
+                getPopupMettiInProduzione();
+            });
         }
-    });
+        else
+        {
+            Swal.fire
+            ({
+                width:"100%",
+                background:"transparent",
+                title:"Caricamento in corso...",
+                html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+                allowOutsideClick:false,
+                showCloseButton:false,
+                showConfirmButton:false,
+                allowEscapeKey:false,
+                showCancelButton:false,
+                onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+            });
+
+            $.get("mettiInProduzioneLottoGestioneLotti.php",
+            {
+                id_lotto,
+                note,
+                data_inizio_produzione,
+                finestra,
+                nome
+            },
+            function(response, status)
+            {
+                if(status=="success")
+                {
+                    if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                    {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                    }
+                    else
+                    {
+                        var arrayResponse=JSON.parse(response);
+                        var id_ordine_di_produzione=arrayResponse.id_ordine_di_produzione;
+
+                        let timerInterval;
+                        Swal.fire
+                        ({
+                            icon:"success",
+                            title: "Lotto messo in produzione",
+                            background:"#404040",
+                            showCloseButton:false,
+                            showConfirmButton:false,
+                            allowOutsideClick:false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                            onClose: () => {clearInterval(timerInterval)}
+                        }).then((result) =>
+                        {
+                            Swal.fire
+                            ({
+                                width:"100%",
+                                background:"transparent",
+                                title:"Creazione file linea carpenteria in corso...",
+                                html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+                                allowOutsideClick:false,
+                                showCloseButton:false,
+                                showConfirmButton:false,
+                                allowEscapeKey:false,
+                                showCancelButton:false,
+                                onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+                            });
+
+                            $.get("creaFileLineaCarpenteriaGestioneLotti.php",
+                            {
+                                id_ordine_di_produzione,
+                                nome:arrayResponse.nome,
+                                produzionePerCabina,
+                                assemblyID
+                            },
+                            function(response, status)
+                            {
+                                if(status=="success")
+                                {
+                                    if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                                    {
+                                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                                        console.log(response);
+                                    }
+                                    else
+                                    {
+                                        let timerInterval;
+                                        Swal.fire
+                                        ({
+                                            icon:"success",
+                                            title: "File linea carpenteria creato",
+                                            background:"#404040",
+                                            showCloseButton:false,
+                                            showConfirmButton:false,
+                                            allowOutsideClick:false,
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                                            onClose: () => {clearInterval(timerInterval)}
+                                        }).then((result) =>
+                                        {
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
+            });
+        }
+    }
 }
