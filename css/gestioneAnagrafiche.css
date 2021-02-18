@@ -258,11 +258,12 @@
 #gestioneAnagraficheContainer
 {
     width: calc(100% - 100px);
+	max-width: calc(100% - 100px);
     margin-left: 50px;
     margin-right: 50px;
     margin-top:10px;
     margin-bottom: 50px;
     height: calc(100% - 300px);
-    overflow:auto;
+    overflow:hidden;
 }
 /*-----------------------------------------------*/

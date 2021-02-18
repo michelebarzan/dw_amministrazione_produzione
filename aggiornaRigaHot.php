@@ -3,11 +3,13 @@
     include "Session.php";
     include "connessione.php";
 
-    $id_nome_pannello_madre=$_REQUEST["id_nome_pannello_madre"];
+    $id=$_REQUEST["id"];
     $colonna=$_REQUEST["colonna"];
     $valore=$_REQUEST["valore"];
+    $table=$_REQUEST["table"];
+    $primaryKey=$_REQUEST["primaryKey"];
 
-    $q="UPDATE nomi_pannelli_madre SET [$colonna]='$valore' WHERE id_nome_pannello_madre = $id_nome_pannello_madre";
+    $q="UPDATE $table SET [$colonna]='$valore' WHERE [$primaryKey] = $id";
     $r=sqlsrv_query($conn,$q);
     if($r==FALSE)
     {

@@ -25,6 +25,18 @@
 					<span>Nomi pannelli madre</span>
 					<i class="fal fa-table"></i>
 				</button>
+				<button class="in-page-nav-bar-button" onclick="getMascheraParametriLineaCarpenteria(this)">
+					<span>Parametri linea carpenteria</span>
+					<i class="fal fa-table"></i>
+				</button>
+				<button class="in-page-nav-bar-button" onclick="getMascheraParametriApplicazione(this)">
+					<span>Parametri applicazione</span>
+					<i class="fal fa-table"></i>
+				</button>
+				<button class="in-page-nav-bar-button" onclick="getMascheraSpessoriMadre(this)">
+					<span>Spessori madre</span>
+					<i class="fal fa-table"></i>
+				</button>
 			</div>
 		</div>
 		<div class="reusable-control-bar" id="actionBarGestioneAnagrafiche" style="display:none"></div>

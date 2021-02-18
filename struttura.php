@@ -10,7 +10,7 @@
 		<!--<input type="button" id="nascondi" value="" onclick="nascondi()" data-toggle='tooltip' title='Apri menu' />-->
 		<button class="main-nav-bar-open-button" onclick="mainNavBarOpen()" title="Apri"><i class="fal fa-list fa-2x"></i></button>
 		<div id="pageName" class="pageName"><?php echo $pageName; ?></div>
-		<div style="color:red;font-weight:bold;font-family:'Montserrat',sans-serif;font-size:16px;font-weight:normal;width:200px;float:left;height:50px;line-height:50px;margin-left:200px" >Versione di prova</div>
+		<div style="color:red;font-weight:bold;font-family:'Montserrat',sans-serif;font-size:16px;font-weight:normal;width:250px;float:left;height:50px;line-height:50px;margin-left:200px" >Programma in fase di sviluppo</div>
 		<div id="user" class="user">
 			<div id="username"><?php echo $_SESSION['username']; ?></div>
 			<input type="button" value="" id="btnUser">

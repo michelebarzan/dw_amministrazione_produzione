@@ -107,7 +107,7 @@ FROM            (SELECT        TOP (100) PERCENT dbo.ordini_di_produzione.nome A
 GROUP BY OrderID, PartName, QuantityNested, QuantityCompleted, ExtraAllowed, Machine, AssemblyID, DueDate, DateWindow, Priority, ForcedPriority, NextPhase, Status, Material, Thickness, AutoTooling, ScriptTooling, ScriptName, 
     ManualNesting, Drawing, Turret, ProductionLabel, Revision, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, Parameter3, Parameter4, Parameter5, Parameter6, Parameter7, Parameter8, 
     Note
-ORDER BY AssemblyID";echo $query1;
+ORDER BY AssemblyID";
     //Pannelli espolosi con quantnita 1
     /*$query1="SELECT        TOP (100) PERCENT OrderID, PartName, 1 AS QuantityOrdered, QuantityNested, QuantityCompleted, ExtraAllowed, Machine, AssemblyID, DueDate, DateWindow, Priority, ForcedPriority, NextPhase, Status, Material, Thickness, 
                          AutoTooling, ScriptTooling, ScriptName, ManualNesting, Drawing, Turret, ProductionLabel, Revision, BendingMode, BendingParameters, StaticNestID, Parameter0, Parameter1, Parameter2, Parameter3, Parameter4, Parameter5, 
