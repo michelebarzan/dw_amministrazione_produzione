@@ -1,6 +1,6 @@
 var hot;
 
-function getMascheraSpessoriMadre(button)
+function getMascheraNomiPannelliMadre(button)
 {
     $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
     button.style.borderBottomColor="#4C91CB";
@@ -123,7 +123,8 @@ async function getHot(table)
 
     Swal.close();
 
-    var height=container.offsetHeight;
+    var height=document.documentElement.offsetHeight;
+	height-=300;
 
     if(response.data.length>0)
     {
@@ -290,7 +291,8 @@ async function getHotSpessoriMadre()
 
     Swal.close();
 
-    var height=container.offsetHeight;
+	var height=document.documentElement.offsetHeight;
+	height-=300;
 
     if(spessoriMadre.data.length>0)
     {
