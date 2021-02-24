@@ -250,6 +250,7 @@ async function getMascheraMessaInProduzione(button)
         locale:"it-IT"
     });
     Swal.close();
+    getPannelliLotto();
 }
 function getLotti()
 {

@@ -207,7 +207,7 @@ async function getMascheraCreazioneLotto(button)
             if(lotto.commessa==commessa)
             {
                 var option=document.createElement("option");
-                option.setAttribute("value",lotto.id_lotto+'|'+lotto.profilo);
+                option.setAttribute("value",lotto.id_lotto+'|'+lotto.profilo+'|'+lotto.lotto+'|'+lotto.id_commessa);
                 option.innerHTML=lotto.lotto + " ("+lotto.profilo+")";
                 optgroup.appendChild(option);
             }
@@ -656,16 +656,16 @@ function getCommesse()
         });
     });
 }
-function creaNuovoLotto()
+async function creaNuovoLotto()
 {
     document.getElementById("popupNuovoLottoLotto").style.border="2px solid #4d4d4d";
 
-    var lotto=document.getElementById("popupNuovoLottoLotto").value;
-    var descrizione=document.getElementById("popupNuovoLottoDescrizione").value;
-    var note=document.getElementById("popupNuovoLottoNote").value;
+    var lotto=document.getElementById("popupNuovoLottoLotto").value.replace("'","''");
+    var descrizione=document.getElementById("popupNuovoLottoDescrizione").value.replace("'","''");
+    var note=document.getElementById("popupNuovoLottoNote").value.replace("'","''");
     var commessa=document.getElementById("selectCommessaGestioneLotti").value;
-    var wbs=document.getElementById("popupNuovoLottoWbs").value;
-    var id_materiale=document.getElementById("popupNuovoLottoId_materiale").value;
+    var wbs=document.getElementById("popupNuovoLottoWbs").value.replace("'","''");
+    var id_materiale=document.getElementById("popupNuovoLottoId_materiale").value.replace("'","''");
 
     if(lotto=="" || lotto==null)
         document.getElementById("popupNuovoLottoLotto").style.border="2px solid #DA6969";
@@ -684,11 +684,174 @@ function creaNuovoLotto()
             showCancelButton:false,
             onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
         });
-        
-        $.post("creaNuovoLottoGestioneLotti.php",
+
+        var lottoDuplicato=await checkLottoDuplicato(lotto,commessa);
+        if(lottoDuplicato)
         {
-            lotto,descrizione,note,commessa,wbs,id_materiale
-        },
+            Swal.fire
+            ({
+                icon:"warning",
+                title: "Esiste gia un lotto con questo nome",
+                background:"#404040",
+                showCloseButton:true,
+                showConfirmButton:true,
+                showCancelButton:true,
+                showDenyButton: true,
+                confirmButtonText:"Rinomina",
+                cancelButtonText:"Annulla",
+                denyButtonText:"Sovrascrivi",
+                onOpen : function()
+                        {
+                            document.getElementsByClassName("swal2-title")[0].style.color="white";
+                            document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";
+                            document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";
+                            document.getElementsByClassName("swal2-title")[0].style.fontFamily="'Montserrat',sans-serif";
+                            document.getElementsByClassName("swal2-close")[0].style.boxShadow="none";
+
+                            document.getElementsByClassName("swal2-confirm")[0].style.fontSize="14px";
+                            document.getElementsByClassName("swal2-confirm")[0].style.fontWeight="normal";
+                            document.getElementsByClassName("swal2-confirm")[0].style.fontFamily="'Montserrat',sans-serif";
+                            
+                            document.getElementsByClassName("swal2-deny")[0].style.fontSize="14px";
+                            document.getElementsByClassName("swal2-deny")[0].style.fontWeight="normal";
+                            document.getElementsByClassName("swal2-deny")[0].style.fontFamily="'Montserrat',sans-serif";
+
+                            document.getElementsByClassName("swal2-cancel")[0].style.fontSize="14px";
+                            document.getElementsByClassName("swal2-cancel")[0].style.fontWeight="normal";
+                            document.getElementsByClassName("swal2-cancel")[0].style.fontFamily="'Montserrat',sans-serif";
+                        }
+            }).then((result) =>
+            {
+                switch (result.value)
+                {
+                    case true:
+                        getPopupAggiungiLotto();
+                    break;
+                    case false:
+                        Swal.fire
+                        ({
+                            width:"100%",
+                            background:"transparent",
+                            title:"Caricamento in corso...",
+                            html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+                            allowOutsideClick:false,
+                            showCloseButton:false,
+                            showConfirmButton:false,
+                            allowEscapeKey:false,
+                            showCancelButton:false,
+                            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+                        });
+                        $.post("eliminaLottoGestioneLotti.php",
+                        {
+                            lotto,commessa
+                        },
+                        function(response, status)
+                        {
+                            if(status=="success")
+                            {
+                                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                                {
+                                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                                    console.log(response);
+                                }
+                                else
+                                {
+                                    $.post("creaNuovoLottoGestioneLotti.php",
+                                    {
+                                        lotto,descrizione,note,commessa,wbs,id_materiale
+                                    },
+                                    function(response, status)
+                                    {
+                                        if(status=="success")
+                                        {
+                                            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                                            {
+                                                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                                                console.log(response);
+                                            }
+                                            else
+                                            {
+                                                console.log(response);
+                                                let timerInterval;
+                                                Swal.fire
+                                                ({
+                                                    icon:"success",
+                                                    title: "Lotto creato",
+                                                    background:"#404040",
+                                                    showCloseButton:true,
+                                                    showConfirmButton:false,
+                                                    timer: 2000,
+                                                    timerProgressBar: true,
+                                                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.boxShadow="none";},
+                                                    onClose: () => {clearInterval(timerInterval)}
+                                                }).then((result) =>
+                                                {
+                                                    //getMascheraCreazioneLotto(document.getElementById("btnCreazioneLotto"));
+                                                    document.getElementById("selectCommessaGestioneLotti").value=commessa;
+
+                                                    creaECambiaSelectLotto(response);
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    break;
+                    case undefined:
+                        Swal.close();
+                    break;
+                }
+            });
+        }
+        else
+        {
+            $.post("creaNuovoLottoGestioneLotti.php",
+            {
+                lotto,descrizione,note,commessa,wbs,id_materiale
+            },
+            function(response, status)
+            {
+                if(status=="success")
+                {
+                    if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                    {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                    }
+                    else
+                    {
+                        console.log(response);
+                        let timerInterval;
+                        Swal.fire
+                        ({
+                            icon:"success",
+                            title: "Lotto creato",
+                            background:"#404040",
+                            showCloseButton:true,
+                            showConfirmButton:false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.boxShadow="none";},
+                            onClose: () => {clearInterval(timerInterval)}
+                        }).then((result) =>
+                        {
+                            //getMascheraCreazioneLotto(document.getElementById("btnCreazioneLotto"));
+                            document.getElementById("selectCommessaGestioneLotti").value=commessa;
+
+                            creaECambiaSelectLotto(response);
+                        });
+                    }
+                }
+            });
+        }
+    }
+}
+function checkLottoDuplicato(lotto,id_commessa)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("checkLottoDuplicatoGestioneLotti.php",{id_commessa,lotto},
         function(response, status)
         {
             if(status=="success")
@@ -697,33 +860,21 @@ function creaNuovoLotto()
                 {
                     Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
                     console.log(response);
+                    resolve(true);
                 }
                 else
                 {
-                    console.log(response);
-                    let timerInterval;
-                    Swal.fire
-                    ({
-                        icon:"success",
-                        title: "Lotto creato",
-                        background:"#404040",
-                        showCloseButton:true,
-                        showConfirmButton:false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.boxShadow="none";},
-                        onClose: () => {clearInterval(timerInterval)}
-                    }).then((result) =>
-                    {
-                        //getMascheraCreazioneLotto(document.getElementById("btnCreazioneLotto"));
-                        document.getElementById("selectCommessaGestioneLotti").value=commessa;
-
-                        creaECambiaSelectLotto(response);
-                    });
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve(true);
+                    }
                 }
             }
         });
-    }
+    });
 }
 async function aggiungiTuttoAlLotto()
 {
@@ -1452,11 +1603,13 @@ function windowClick(e)
     }
     catch (error) {}
 }
-function importaLottoGeneralNumbering()
+async function importaLottoGeneralNumbering()
 {
     var selects=$('#selectLottoGeneralNumbering').multipleSelect('getSelects')[1].split("|");
     var id_lottoOld=selects[0];
     var profilo=selects[1];
+    var lottoOld=selects[2];
+    var commessa=selects[3];
 
     Swal.fire
     ({
@@ -1471,44 +1624,163 @@ function importaLottoGeneralNumbering()
         showCancelButton:false,
         onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
     });
-    
-    $.get("importaLottoGeneralNumbering.php",{id_lottoOld,profilo},
-    function(response, status)
-    {
-        if(status=="success")
-        {
-            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-            {
-                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                console.log(response);
-            }
-            else
-            {
-                let timerInterval;
-                Swal.fire
-                ({
-                    icon:"success",
-                    title: "Lotto importato",
-                    background:"#404040",
-                    showCloseButton:false,
-                    showConfirmButton:false,
-                    allowOutsideClick:false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
-                    onClose: () => {clearInterval(timerInterval)}
-                }).then((result) =>
-                {
-                    var responseObj=JSON.parse(response);
-                    console.log(responseObj);
-                    var id_commessa=responseObj.id_commessa;
-                    var id_lotto=responseObj.id_lotto;
-                    var lotto=responseObj.lotto;
-                    document.getElementById("selectCommessaGestioneLotti").value=id_commessa;
 
-                    creaECambiaSelectLotto(id_lotto);
-                });
+    var lottoDuplicato=await checkLottoDuplicato(lottoOld,commessa);
+    if(lottoDuplicato)
+    {
+        Swal.fire
+        ({
+            icon:"warning",
+            title: "Esiste gia un lotto con questo nome",
+            background:"#404040",
+            showCloseButton:true,
+            showConfirmButton:false,
+            showCancelButton:true,
+            showDenyButton: true,
+            cancelButtonText:"Annulla",
+            denyButtonText:"Sovrascrivi",
+            onOpen : function()
+                    {
+                        document.getElementsByClassName("swal2-title")[0].style.color="white";
+                        document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";
+                        document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";
+                        document.getElementsByClassName("swal2-title")[0].style.fontFamily="'Montserrat',sans-serif";
+                        document.getElementsByClassName("swal2-close")[0].style.boxShadow="none";
+
+                        document.getElementsByClassName("swal2-confirm")[0].style.fontSize="14px";
+                        document.getElementsByClassName("swal2-confirm")[0].style.fontWeight="normal";
+                        document.getElementsByClassName("swal2-confirm")[0].style.fontFamily="'Montserrat',sans-serif";
+                        
+                        document.getElementsByClassName("swal2-deny")[0].style.fontSize="14px";
+                        document.getElementsByClassName("swal2-deny")[0].style.fontWeight="normal";
+                        document.getElementsByClassName("swal2-deny")[0].style.fontFamily="'Montserrat',sans-serif";
+
+                        document.getElementsByClassName("swal2-cancel")[0].style.fontSize="14px";
+                        document.getElementsByClassName("swal2-cancel")[0].style.fontWeight="normal";
+                        document.getElementsByClassName("swal2-cancel")[0].style.fontFamily="'Montserrat',sans-serif";
+                    }
+        }).then((result) =>
+        {
+            switch (result.value)
+            {
+                case false:
+                    Swal.fire
+                    ({
+                        width:"100%",
+                        background:"transparent",
+                        title:"Caricamento in corso...",
+                        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+                        allowOutsideClick:false,
+                        showCloseButton:false,
+                        showConfirmButton:false,
+                        allowEscapeKey:false,
+                        showCancelButton:false,
+                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+                    });
+                    $.post("eliminaLottoGestioneLotti.php",
+                    {
+                        lotto:lottoOld,commessa
+                    },
+                    function(response, status)
+                    {
+                        if(status=="success")
+                        {
+                            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                            {
+                                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                                console.log(response);
+                            }
+                            else
+                            {
+                                $.get("importaLottoGeneralNumbering.php",{id_lottoOld,profilo},
+                                function(response, status)
+                                {
+                                    if(status=="success")
+                                    {
+                                        if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                                        {
+                                            Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                                            console.log(response);
+                                        }
+                                        else
+                                        {
+                                            let timerInterval;
+                                            Swal.fire
+                                            ({
+                                                icon:"success",
+                                                title: "Lotto importato",
+                                                background:"#404040",
+                                                showCloseButton:false,
+                                                showConfirmButton:false,
+                                                allowOutsideClick:false,
+                                                timer: 2000,
+                                                timerProgressBar: true,
+                                                onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                                                onClose: () => {clearInterval(timerInterval)}
+                                            }).then((result) =>
+                                            {
+                                                var responseObj=JSON.parse(response);
+                                                console.log(responseObj);
+                                                var id_commessa=responseObj.id_commessa;
+                                                var id_lotto=responseObj.id_lotto;
+                                                var lotto=responseObj.lotto;
+                                                document.getElementById("selectCommessaGestioneLotti").value=id_commessa;
+
+                                                creaECambiaSelectLotto(id_lotto);
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                break;
+                case undefined:
+                    Swal.close();
+                break;
             }
-        }
-    });
+        });
+    }
+    else
+    {
+        $.get("importaLottoGeneralNumbering.php",{id_lottoOld,profilo},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                }
+                else
+                {
+                    let timerInterval;
+                    Swal.fire
+                    ({
+                        icon:"success",
+                        title: "Lotto importato",
+                        background:"#404040",
+                        showCloseButton:false,
+                        showConfirmButton:false,
+                        allowOutsideClick:false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                        onClose: () => {clearInterval(timerInterval)}
+                    }).then((result) =>
+                    {
+                        var responseObj=JSON.parse(response);
+                        console.log(responseObj);
+                        var id_commessa=responseObj.id_commessa;
+                        var id_lotto=responseObj.id_lotto;
+                        var lotto=responseObj.lotto;
+                        document.getElementById("selectCommessaGestioneLotti").value=id_commessa;
+
+                        creaECambiaSelectLotto(id_lotto);
+                    });
+                }
+            }
+        });
+    }
 }

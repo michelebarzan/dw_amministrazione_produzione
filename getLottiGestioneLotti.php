@@ -4,13 +4,8 @@
 
     $lotti=[];
 
-    /*$query2="SELECT        TOP (100) PERCENT dw_dati.dbo.commesse.commessa, dw_dati.dbo.lotti.lotto, dw_dati.dbo.lotti.data, dw_dati.dbo.lotti.id_lotto
-    FROM            dw_dati.dbo.lotti INNER JOIN
-                             dw_dati.dbo.commesse ON dw_dati.dbo.lotti.commessa = dw_dati.dbo.commesse.id_commessa
-    ORDER BY LEN(dw_dati.dbo.lotti.lotto), dw_dati.dbo.lotti.lotto";	*/
-    $query2="SELECT        dbo.lotti.id_lotto, dbo.lotti.lotto, dbo.lotti.descrizione, dbo.lotti.note, dbo.commesse.id_commessa, dbo.commesse.commessa, dbo.lotti.dataCreazione
-    FROM            dbo.lotti INNER JOIN
-                             dbo.commesse ON dbo.lotti.commessa = dbo.commesse.id_commessa";
+    $query2="SELECT dbo.lotti.id_lotto, dbo.lotti.lotto, dbo.lotti.descrizione, dbo.lotti.note, dbo.commesse.id_commessa, dbo.commesse.commessa, dbo.lotti.dataCreazione
+            FROM dbo.lotti INNER JOIN dbo.commesse ON dbo.lotti.commessa = dbo.commesse.id_commessa ORDER BY id_lotto DESC";
     $result2=sqlsrv_query($conn,$query2);
     if($result2==TRUE)
     {
