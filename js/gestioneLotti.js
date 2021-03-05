@@ -1608,7 +1608,7 @@ async function importaLottoGeneralNumbering()
     var selects=$('#selectLottoGeneralNumbering').multipleSelect('getSelects')[1].split("|");
     var id_lottoOld=selects[0];
     var profilo=selects[1];
-    var lottoOld=selects[2];
+    var lottoOld=selects[2]+"_"+profilo;
     var commessa=selects[3];
 
     Swal.fire

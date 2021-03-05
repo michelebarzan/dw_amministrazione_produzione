@@ -21,14 +21,14 @@
             ,[dataCreazione]
             ,[utente]
             ,[wbs]
-            ,[id_materiale]) SELECT lotto, Descrizione, note, commessa, data, ".$_SESSION['id_utente']." AS utente, WBS, [ID Materiale]
-            FROM  (SELECT        id_lotto, commessa, totPannelli, ultimaVersione, data, note, nVersioni, lotto, generabile, Descrizione, WBS, [ID Materiale], avvisoRevisioneCodcab
+            ,[id_materiale]) SELECT concat(concat(lotto,'_'),profilo), Descrizione, note, commessa, data, ".$_SESSION['id_utente']." AS utente, WBS, [ID Materiale]
+            FROM  (SELECT        id_lotto, commessa, totPannelli, ultimaVersione, data, note, nVersioni, lotto, generabile, Descrizione, WBS, [ID Materiale], avvisoRevisioneCodcab,'mb' as profilo
             FROM            SRV.dw_dati.dbo.lotti_mb AS lotti_mb_1
             UNION ALL
-            SELECT        id_lotto, commessa, totPannelli, ultimaVersione, data, note, nVersioni, lotto, generabile, Descrizione, WBS, [ID Materiale], avvisoRevisioneCodcab
+            SELECT        id_lotto, commessa, totPannelli, ultimaVersione, data, note, nVersioni, lotto, generabile, Descrizione, WBS, [ID Materiale], avvisoRevisioneCodcab,'mf' as profilo
             FROM            SRV.dw_dati.dbo.lotti AS lotti_2
             UNION ALL
-            SELECT        id_lotto, commessa, totPannelli, ultimaVersione, data, note, nVersioni, lotto, generabile, Descrizione, WBS, [ID Materiale], avvisoRevisioneCodcab
+            SELECT        id_lotto, commessa, totPannelli, ultimaVersione, data, note, nVersioni, lotto, generabile, Descrizione, WBS, [ID Materiale], avvisoRevisioneCodcab,'bf' as profilo
             FROM            SRV.dw_dati.dbo.lotti_bf AS lotti_bf_1) AS lotti_1
             WHERE (id_lotto = $id_lottoOld)";
     $result2=sqlsrv_query($conn,$query2);
