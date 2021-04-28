@@ -20,8 +20,10 @@
                 ,[utente]
                 ,[data_inizio_produzione]
                 ,[lotto]
-                ,[finestra],nome)
-            VALUES ('$note',GETDATE(),".$_SESSION['id_utente'].",'$data_inizio_produzione',$id_lotto,$finestra,'$nome')";
+                ,[finestra]
+				,[nome]
+				,[eliminato])
+            VALUES ('$note',GETDATE(),".$_SESSION['id_utente'].",'$data_inizio_produzione',$id_lotto,$finestra,'$nome','false')";
     $result1=sqlsrv_query($conn,$query1);
     if($result1==TRUE)
     {

@@ -10,7 +10,7 @@
 
     $data=[];
 
-    $query1="SELECT * FROM view_messa_in_produzione_lotti WHERE id_lotto=$id_lotto ORDER BY numero_pannello";
+    $query1="SELECT * FROM view_messa_in_produzione_lotti WHERE id_lotto=$id_lotto";
     $result1=sqlsrv_query($conn,$query1);
     if($result1==TRUE)
     {

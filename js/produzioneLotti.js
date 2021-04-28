@@ -304,6 +304,7 @@ async function getPannelliLotto()
 
     var id_lotto=$('#selectLottoGestioneLotti').multipleSelect('getSelects')[0];
 
+    console.log(id_lotto);
     data=await getViewMessaInProduzioneLotti(id_lotto);
     console.log(data);
 
