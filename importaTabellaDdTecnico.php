@@ -100,7 +100,7 @@
                 }
             break;
             case "rinforzi" ://---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                $q="INSERT INTO [dbo].[rinforzi] ([codice_rinforzo],[descrizione],[qnt],[um],[id_materia_prima],[profilo]) SELECT tabrinf_1.CODRIN AS Expr1, tabrinf_1.DESCRIZIONE AS Expr2, tabrinf_1.QNT AS Expr3, tabrinf_1.UM AS Expr4, dbo.materie_prime.id_materia_prima, '$profiloString' AS Expr5 FROM $srv_name.dbo.tabrinf$profilo AS tabrinf_1 INNER JOIN dbo.materie_prime ON tabrinf_1.CODMAT = dbo.materie_prime.codice_materia_prima WHERE (tabrinf_1.CODRIN NOT IN (SELECT codice_rinforzo FROM dbo.rinforzi))";
+                $q="INSERT INTO [dbo].[rinforzi] ([codice_rinforzo],[descrizione],[qnt],[um],[id_materia_prima],[profilo],[vh]) SELECT tabrinf_1.CODRIN AS Expr1, tabrinf_1.DESCRIZIONE AS Expr2, tabrinf_1.QNT AS Expr3, tabrinf_1.UM AS Expr4, dbo.materie_prime.id_materia_prima, '$profiloString' AS Expr5,tabrinf_1.VH FROM $srv_name.dbo.tabrinf$profilo AS tabrinf_1 INNER JOIN dbo.materie_prime ON tabrinf_1.CODMAT = dbo.materie_prime.codice_materia_prima WHERE (tabrinf_1.CODRIN NOT IN (SELECT codice_rinforzo FROM dbo.rinforzi))";
                 $r=sqlsrv_query($conn,$q);
                 $result["query_".$profilo]=$q;
                 if($r==FALSE)
